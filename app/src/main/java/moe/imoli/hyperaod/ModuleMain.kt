@@ -82,8 +82,13 @@ class ModuleMain : XposedModule() {
                     it.resolve().apply {
                         // view更新触发
                         firstMethod { name = "dealWithChange" }.self.createAfterHook {
-                            log(Log.ERROR, TAG, "update aod view")
+                            //log(Log.ERROR, TAG, "update aod view")
                             //ModifierManager.update()
+                        }
+                        // 销毁时触发
+                        firstMethod { name = "destroy" }.self.createAfterHook {
+                            //log(Log.ERROR, TAG, "update aod view")
+                            ModifierManager.close()
                         }
                         // 显示时触发
                         firstMethod {
