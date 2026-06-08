@@ -59,3 +59,5 @@
 }
 
 -keep class com.highcapable.kavaref.extension.TypeRef {*;}
+
+-keep class com.hchen.superlyricapi.* {*;}

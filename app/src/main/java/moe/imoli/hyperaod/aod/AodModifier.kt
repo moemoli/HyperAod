@@ -22,11 +22,17 @@ abstract class AodModifier(
 
     open fun close() {}
 
-    fun refresh(aodView: Any) {
+
+    fun refresh(aodView: Any, dozeHost: Any) {
+        dozeHost.asResolver().apply {
+            firstMethod { name = "requestDrawWakelock" }
+                .invoke(2000L, "Lyric#Update")
+        }
         aodView.asResolver().apply {
             firstMethod { name = "updateAodView" }
                 .invoke()
         }
+
 
 
     }

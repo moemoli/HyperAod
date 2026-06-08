@@ -4,16 +4,21 @@ import android.content.Context
 import android.widget.FrameLayout
 
 object ModifierManager {
+
+    val modifiers = arrayOf(
+        LyricModifier
+    )
+
     fun update() {
-        DebugModifier.update()
+        modifiers.forEach { modifier -> modifier.update() }
     }
 
     fun init(mAodView: FrameLayout?, mContainer: FrameLayout?, mContext: Context, thisObject: Any) {
-        DebugModifier.init(mAodView, mContainer, mContext, thisObject)
+        modifiers.forEach { modifier -> modifier.init(mAodView, mContainer, mContext, thisObject) }
     }
 
     fun close() {
-        DebugModifier.close()
+        modifiers.forEach { modifier -> modifier.close() }
     }
 
 }

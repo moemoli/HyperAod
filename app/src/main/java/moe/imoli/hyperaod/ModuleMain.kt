@@ -1,11 +1,8 @@
 package moe.imoli.hyperaod
 
 import android.content.Context
-import android.os.PowerManager
 import android.util.Log
-import android.view.View
 import android.widget.FrameLayout
-import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ClassLoaderProvider
 import com.highcapable.kavaref.extension.toClassOrNull
@@ -14,14 +11,13 @@ import io.github.kyuubiran.ezxhelper.xposed.EzXposed
 import io.github.kyuubiran.ezxhelper.xposed.dsl.HookFactory.`-Static`.createAfterHook
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
-import moe.imoli.hyperaod.aod.DebugModifier
 import moe.imoli.hyperaod.aod.ModifierManager
 
 
 class ModuleMain : XposedModule() {
 
     companion object {
-        private const val TAG = "HyperAod"
+        const val TAG = "HyperAod"
         private const val SYSTEMUI_PKG = "com.android.systemui"
 
         //private const val DOZE_SERVICE = "com.android.systemui.doze.DozeService"
@@ -31,6 +27,8 @@ class ModuleMain : XposedModule() {
         private const val DOZE_HOST = "com.miui.aod.DozeHost"
         private const val FIELD_M_DOZE_PLUGIN = "mPlugin"
         private const val FIELD_S_HOST = "sHost"
+
+        var DEBUG = BuildConfig.DEBUG
 
 
     }

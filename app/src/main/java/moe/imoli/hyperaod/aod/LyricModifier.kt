@@ -1,19 +1,20 @@
 package moe.imoli.hyperaod.aod
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.widget.FrameLayout
 import android.widget.TextSwitcher
 import android.widget.TextView
-import androidx.core.view.postDelayed
 import com.hchen.superlyricapi.ISuperLyricReceiver
 import com.hchen.superlyricapi.SuperLyricData
 import com.hchen.superlyricapi.SuperLyricHelper
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import moe.imoli.hyperaod.ModuleMain
 
-object DebugModifier : AodModifier() {
+object LyricModifier : AodModifier() {
 
 
     private var receiver: ISuperLyricReceiver.Stub? = null
@@ -33,6 +34,7 @@ object DebugModifier : AodModifier() {
             val aodContent = container.asResolver()
                 .firstField { name = "mAodContent" }
                 .get() as ViewGroup
+            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "add lyricSwitcher")
             aodContent.addView(lyricSwitcher.lyric)
         }
 
@@ -42,8 +44,10 @@ object DebugModifier : AodModifier() {
                 if (data?.hasLyric() ?: return) {
                     val text = data.lyric?.text ?: return
                     container?.post {
-                        refresh(container)
+                        if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: $text")
+                        refresh(container,dozeHost)
                         lyricSwitcher.update(text)
+
                     }
                 }
 
@@ -51,11 +55,12 @@ object DebugModifier : AodModifier() {
 
             override fun onStop(publisher: String?, data: SuperLyricData?) {
                 container?.post {
-                    refresh(container)
+                    refresh(container,dozeHost)
                     lyricSwitcher.update("")
                 }
             }
         }.apply {
+            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "register receiver")
             SuperLyricHelper.registerReceiver(this)
         }
     }
@@ -68,6 +73,7 @@ object DebugModifier : AodModifier() {
     override fun close() {
         receiver?.let {
             if (SuperLyricHelper.isReceiverRegistered(it)) {
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "unregister receiver")
                 SuperLyricHelper.unregisterReceiver(it)
             }
         }
