@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.R
 import moe.imoli.hyperaod.ui.settings.ColorInputField
 import moe.imoli.hyperaod.ui.settings.DropdownField
+import moe.imoli.hyperaod.ui.settings.DropdownOption
 import moe.imoli.hyperaod.ui.settings.SearchableGroup
 import moe.imoli.hyperaod.ui.settings.SettingsGroup
 import moe.imoli.hyperaod.ui.settings.SliderInputField
@@ -60,9 +61,9 @@ fun PortraitScreen(
     var marginBottom by remember { mutableStateOf(0f) }
     var marginLeft by remember { mutableStateOf(0f) }
     var marginRight by remember { mutableStateOf(0f) }
-    var alignment by remember { mutableStateOf("居中") }
-    var enterAnim by remember { mutableStateOf("淡入") }
-    var exitAnim by remember { mutableStateOf("淡出") }
+    var alignment by remember { mutableStateOf(1) }
+    var enterAnim by remember { mutableStateOf(1) }
+    var exitAnim by remember { mutableStateOf(1) }
     var enterAnimDuration by remember { mutableStateOf(300f) }
     var exitAnimDuration by remember { mutableStateOf(300f) }
 
@@ -206,24 +207,45 @@ fun PortraitScreen(
                     DropdownField(
                         value = alignment,
                         onValueChange = { alignment = it },
-                        options = listOf("左对齐", "居中", "右对齐"),
-                        label = "对齐方式"
+                        "对齐方式",
+                        options = listOf(
+                            DropdownOption("左对齐", 0),
+                            DropdownOption("居中", 1),
+                            DropdownOption("右对齐", 2)
+                        ),
+
                     )
                 }
                 item("进入动画") {
                     DropdownField(
                         value = enterAnim,
                         onValueChange = { enterAnim = it },
-                        options = listOf("无", "淡入", "上滑", "下滑", "左滑", "右滑"),
-                        label = "进入动画"
+                        "进入动画",
+                        options = listOf(
+                            DropdownOption("无", 0),
+                            DropdownOption("淡入", 1),
+                            DropdownOption("上滑", 2),
+                            DropdownOption("下滑", 3),
+                            DropdownOption("左滑", 4),
+                            DropdownOption("右滑", 5)
+                        ),
+
                     )
                 }
                 item("离开动画") {
                     DropdownField(
                         value = exitAnim,
                         onValueChange = { exitAnim = it },
-                        options = listOf("无", "淡出", "上滑", "下滑", "左滑", "右滑"),
-                        label = "离开动画"
+                        "离开动画",
+                        options = listOf(
+                            DropdownOption("无", 0),
+                            DropdownOption("淡出", 1),
+                            DropdownOption("上滑", 2),
+                            DropdownOption("下滑", 3),
+                            DropdownOption("左滑", 4),
+                            DropdownOption("右滑", 5)
+                        ),
+
                     )
                 }
                 item("进入动画时长") {

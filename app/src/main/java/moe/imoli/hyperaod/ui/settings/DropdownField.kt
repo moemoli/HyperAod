@@ -42,6 +42,17 @@ import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 
 /**
+ * 下拉选项，将显示文本与实际值分离
+ *
+ * @param label 显示在菜单和选择框中的文本
+ * @param value 实际存储/返回的值
+ */
+data class DropdownOption<T>(
+    val label: String,
+    val value: T
+)
+
+/**
  * HyperOS 3 风格的下拉选择组件
  *
  * 左侧展示当前选中内容，右侧为箭头图标。
@@ -186,6 +197,42 @@ fun <T> DropdownField(
     }
 }
 
+/**
+ * 便捷重载：使用 [DropdownOption] 列表，显示文本与实际值分离
+ *
+ * 用法：
+ * ```
+ * var anim by remember { mutableStateOf(1) }
+ * DropdownField(
+ *     value = anim,
+ *     onValueChange = { anim = it },
+ *     options = listOf(
+ *         DropdownOption("无", 0),
+ *         DropdownOption("淡入", 1),
+ *         DropdownOption("上滑", 2)
+ *     ),
+ *     label = "进入动画"
+ * )
+ * ```
+ */
+@Composable
+fun <T> DropdownField(
+    value: T,
+    onValueChange: (T) -> Unit,
+    label: String? = null,
+    options: List<DropdownOption<T>>,
+    modifier: Modifier = Modifier
+) {
+    DropdownField(
+        value = value,
+        onValueChange = onValueChange,
+        options = options.map { it.value },
+        labelMapper = { v -> options.first { it.value == v }.label },
+        label = label,
+        modifier = modifier
+    )
+}
+
 // ========================
 // Preview
 // ========================
@@ -194,8 +241,8 @@ fun <T> DropdownField(
 @Composable
 private fun DropdownFieldPreview() {
     HyperAodTheme {
-        var selectedTheme by remember { mutableStateOf("深色") }
-        var selectedLang by remember { mutableStateOf("中文") }
+        var selectedTheme by remember { mutableStateOf(1) }
+        var selectedAnim by remember { mutableStateOf(1) }
 
         Column(
             modifier = Modifier.padding(16.dp),
@@ -204,15 +251,25 @@ private fun DropdownFieldPreview() {
             DropdownField(
                 value = selectedTheme,
                 onValueChange = { selectedTheme = it },
-                options = listOf("浅色", "深色", "跟随系统"),
-                label = "主题模式"
+                "主题模式",
+                listOf(
+                    DropdownOption("浅色", 0),
+                    DropdownOption("深色", 1),
+                    DropdownOption("跟随系统", 2)
+                ),
+
             )
 
             DropdownField(
-                value = selectedLang,
-                onValueChange = { selectedLang = it },
-                options = listOf("中文", "English", "日本語"),
-                label = "语言"
+                value = selectedAnim,
+                onValueChange = { selectedAnim = it },
+                "进入动画",
+                options = listOf(
+                    DropdownOption("无", 0),
+                    DropdownOption("淡入", 1),
+                    DropdownOption("上滑", 2)
+                ),
+
             )
         }
     }
