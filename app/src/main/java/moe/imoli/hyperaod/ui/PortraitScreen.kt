@@ -28,13 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.R
+import moe.imoli.hyperaod.ui.settings.ColorInputField
+import moe.imoli.hyperaod.ui.settings.DropdownField
 import moe.imoli.hyperaod.ui.settings.SearchableGroup
 import moe.imoli.hyperaod.ui.settings.SettingsGroup
 import moe.imoli.hyperaod.ui.settings.SliderInputField
-import moe.imoli.hyperaod.ui.settings.SwitchField
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 
 /**
@@ -49,12 +51,18 @@ fun PortraitScreen(
 ) {
     var showRestartDialog by remember { mutableStateOf(false) }
 
-    var switchLyric by remember { mutableStateOf(true) }
-    var switchCover by remember { mutableStateOf(false) }
-    var switchProgress by remember { mutableStateOf(true) }
-    var switchAnimation by remember { mutableStateOf(false) }
+    // 歌词设置状态
     var fontSize by remember { mutableStateOf(24f) }
-    var alpha by remember { mutableStateOf(0.8f) }
+    var fontColor by remember { mutableStateOf(Color.White) }
+    var marginTop by remember { mutableStateOf(0f) }
+    var marginBottom by remember { mutableStateOf(0f) }
+    var marginLeft by remember { mutableStateOf(0f) }
+    var marginRight by remember { mutableStateOf(0f) }
+    var alignment by remember { mutableStateOf("居中") }
+    var enterAnim by remember { mutableStateOf("淡入") }
+    var exitAnim by remember { mutableStateOf("淡出") }
+    var enterAnimDuration by remember { mutableStateOf(300f) }
+    var exitAnimDuration by remember { mutableStateOf(300f) }
 
     if (showRestartDialog) {
         AlertDialog(
@@ -134,62 +142,94 @@ fun PortraitScreen(
         // 搜索组件 + 设置分组
         SearchableGroup { query ->
             SettingsGroup(
-                label = "显示设置",
+                label = "歌词设置",
                 searchQuery = query
             ) {
-                item("歌词显示") {
-                    SwitchField(
-                        checked = switchLyric,
-                        onCheckedChange = { switchLyric = it },
-                        label = "歌词显示",
-                        description = "在息屏上显示当前播放歌词"
-                    )
-                }
-                item("封面显示") {
-                    SwitchField(
-                        checked = switchCover,
-                        onCheckedChange = { switchCover = it },
-                        label = "封面显示",
-                        description = "在息屏上显示专辑封面"
-                    )
-                }
-                item("进度条") {
-                    SwitchField(
-                        checked = switchProgress,
-                        onCheckedChange = { switchProgress = it },
-                        label = "进度条",
-                        description = "在息屏上显示播放进度"
-                    )
-                }
-                item("动画效果") {
-                    SwitchField(
-                        checked = switchAnimation,
-                        onCheckedChange = { switchAnimation = it },
-                        label = "动画效果",
-                        description = "歌词切换时的过渡动画"
-                    )
-                }
-            }
-
-            SettingsGroup(
-                label = "样式设置",
-                searchQuery = query
-            ) {
-                item("歌词字号") {
+                item("字体大小") {
                     SliderInputField(
                         value = fontSize,
                         onValueChange = { fontSize = it },
-                        valueRange = 12f..48f,
-                        label = "歌词字号"
+                        valueRange = 12f..72f,
+                        label = "字体大小"
                     )
                 }
-                item("透明度") {
+                item("字体颜色") {
+                    ColorInputField(
+                        value = fontColor,
+                        onValueChange = { fontColor = it },
+                        label = "字体颜色"
+                    )
+                }
+                item("上边距") {
                     SliderInputField(
-                        value = alpha,
-                        onValueChange = { alpha = it },
-                        valueRange = 0f..1f,
-                        label = "透明度",
-                        decimals = 2
+                        value = marginTop,
+                        onValueChange = { marginTop = it },
+                        valueRange = 0f..500f,
+                        label = "上边距"
+                    )
+                }
+                item("下边距") {
+                    SliderInputField(
+                        value = marginBottom,
+                        onValueChange = { marginBottom = it },
+                        valueRange = 0f..500f,
+                        label = "下边距"
+                    )
+                }
+                item("左边距") {
+                    SliderInputField(
+                        value = marginLeft,
+                        onValueChange = { marginLeft = it },
+                        valueRange = 0f..500f,
+                        label = "左边距"
+                    )
+                }
+                item("右边距") {
+                    SliderInputField(
+                        value = marginRight,
+                        onValueChange = { marginRight = it },
+                        valueRange = 0f..500f,
+                        label = "右边距"
+                    )
+                }
+                item("对齐方式") {
+                    DropdownField(
+                        value = alignment,
+                        onValueChange = { alignment = it },
+                        options = listOf("左对齐", "居中", "右对齐"),
+                        label = "对齐方式"
+                    )
+                }
+                item("进入动画") {
+                    DropdownField(
+                        value = enterAnim,
+                        onValueChange = { enterAnim = it },
+                        options = listOf("无", "淡入", "上滑", "下滑", "左滑", "右滑"),
+                        label = "进入动画"
+                    )
+                }
+                item("离开动画") {
+                    DropdownField(
+                        value = exitAnim,
+                        onValueChange = { exitAnim = it },
+                        options = listOf("无", "淡出", "上滑", "下滑", "左滑", "右滑"),
+                        label = "离开动画"
+                    )
+                }
+                item("进入动画时长") {
+                    SliderInputField(
+                        value = enterAnimDuration,
+                        onValueChange = { enterAnimDuration = it },
+                        valueRange = 0f..2000f,
+                        label = "进入动画时长 (ms)"
+                    )
+                }
+                item("离开动画时长") {
+                    SliderInputField(
+                        value = exitAnimDuration,
+                        onValueChange = { exitAnimDuration = it },
+                        valueRange = 0f..2000f,
+                        label = "离开动画时长 (ms)"
                     )
                 }
             }

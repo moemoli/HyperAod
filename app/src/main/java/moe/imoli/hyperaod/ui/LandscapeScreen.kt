@@ -43,8 +43,8 @@ fun LandscapeScreen(
 @androidx.compose.ui.tooling.preview.Preview(
     showBackground = true,
     //showSystemUi = true,
-    widthDp = 800,
-    heightDp = 480,
+    widthDp = 1200,
+    heightDp = 680,
 )
 @Composable
 private fun LandscapeScreenPreview() {
