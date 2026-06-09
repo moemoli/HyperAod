@@ -37,6 +37,7 @@ import moe.imoli.hyperaod.ui.settings.DropdownField
 import moe.imoli.hyperaod.ui.settings.SearchableGroup
 import moe.imoli.hyperaod.ui.settings.SettingsGroup
 import moe.imoli.hyperaod.ui.settings.SliderInputField
+import moe.imoli.hyperaod.ui.settings.SwitchField
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 
 /**
@@ -52,6 +53,7 @@ fun PortraitScreen(
     var showRestartDialog by remember { mutableStateOf(false) }
 
     // 歌词设置状态
+    var switchLyric by remember { mutableStateOf(false) }
     var fontSize by remember { mutableStateOf(24f) }
     var fontColor by remember { mutableStateOf(Color.White) }
     var marginTop by remember { mutableStateOf(0f) }
@@ -145,6 +147,14 @@ fun PortraitScreen(
                 label = "歌词设置",
                 searchQuery = query
             ) {
+                item("歌词显示") {
+                    SwitchField(
+                        checked = switchLyric,
+                        onCheckedChange = { switchLyric = it },
+                        label = "歌词显示",
+                        description = "在息屏上显示当前播放歌词"
+                    )
+                }
                 item("字体大小") {
                     SliderInputField(
                         value = fontSize,
