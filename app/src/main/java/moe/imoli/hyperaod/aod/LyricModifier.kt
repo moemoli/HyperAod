@@ -118,7 +118,7 @@ object LyricModifier : AodModifier() {
                     }
 
                     layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT
                     )
 
