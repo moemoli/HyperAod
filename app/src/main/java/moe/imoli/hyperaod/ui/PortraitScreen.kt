@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.AodSettings
@@ -53,20 +55,21 @@ fun PortraitScreen(
     onAbout: () -> Unit = {}
 ) {
     var showRestartDialog by remember { mutableStateOf(false) }
+    
 
     // 歌词设置状态
-    var switchLyric by remember { mutableStateOf(false) }
-    var fontSize by remember { mutableStateOf(24f) }
-    var fontColor by remember { mutableStateOf(Color.White) }
-    var marginTop by remember { mutableStateOf(0f) }
-    var marginBottom by remember { mutableStateOf(0f) }
-    var marginLeft by remember { mutableStateOf(0f) }
-    var marginRight by remember { mutableStateOf(0f) }
-    var alignment by remember { mutableStateOf(1) }
-    var enterAnim by remember { mutableStateOf(1) }
-    var exitAnim by remember { mutableStateOf(1) }
-    var enterAnimDuration by remember { mutableStateOf(300f) }
-    var exitAnimDuration by remember { mutableStateOf(300f) }
+    var switchLyric by remember { mutableStateOf(AodSettings.lyric.enable) }
+    var fontSize by remember { mutableStateOf(AodSettings.lyric.fontSize) }
+    var fontColor by remember { mutableStateOf(Color.fromColorLong(AodSettings.lyric.fontColor)) }
+    var marginTop by remember { mutableStateOf(AodSettings.lyric.marginTop) }
+    var marginBottom by remember { mutableStateOf(AodSettings.lyric.marginBottom) }
+    var marginLeft by remember { mutableStateOf(AodSettings.lyric.marginLeft) }
+    var marginRight by remember { mutableStateOf(AodSettings.lyric.marginRight) }
+    var alignment by remember { mutableStateOf(AodSettings.lyric.alignment.type) }
+    var enterAnim by remember { mutableStateOf(AodSettings.lyric.enterAnim.type) }
+    var exitAnim by remember { mutableStateOf(AodSettings.lyric.exitAnim.type) }
+    var enterAnimDuration by remember { mutableStateOf(AodSettings.lyric.enterAnimDuration) }
+    var exitAnimDuration by remember { mutableStateOf(AodSettings.lyric.exitAnimDuration) }
 
     if (showRestartDialog) {
         AlertDialog(
@@ -107,7 +110,7 @@ fun PortraitScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {

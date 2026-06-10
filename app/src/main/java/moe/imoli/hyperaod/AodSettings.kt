@@ -2,6 +2,7 @@ package moe.imoli.hyperaod
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.edit
 import io.github.libxposed.service.RemotePreferences
@@ -107,26 +108,26 @@ object AodSettings {
     }
 
     fun update() {
-        HyperAod.APP.getSharedPreferences("hook", Context.MODE_PRIVATE)
-            .edit {
-                // lyric
-                putBoolean("lyric.enable", lyric.enable)
-                putFloat("lyric.fontSize", lyric.fontSize)
-                putLong("lyric.fontColor", lyric.fontColor)
-                putFloat("lyric.marginTop", lyric.marginTop)
-                putFloat("lyric.marginBottom", lyric.marginBottom)
-                putFloat("lyric.marginLeft", lyric.marginLeft)
-                putFloat("lyric.marginRight", lyric.marginRight)
-                putInt("lyric.alignment", lyric.alignment.type)
-                putInt("lyric.enterAnim", lyric.enterAnim.type)
-                putInt("lyric.exitAnim", lyric.exitAnim.type)
-                putFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
-                putFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
-                // todo...
+        HyperAod.SERVICE?.getRemotePreferences("hook")?.edit {
+            // lyric
+            putBoolean("lyric.enable", lyric.enable)
+            putFloat("lyric.fontSize", lyric.fontSize)
+            putLong("lyric.fontColor", lyric.fontColor)
+            putFloat("lyric.marginTop", lyric.marginTop)
+            putFloat("lyric.marginBottom", lyric.marginBottom)
+            putFloat("lyric.marginLeft", lyric.marginLeft)
+            putFloat("lyric.marginRight", lyric.marginRight)
+            putInt("lyric.alignment", lyric.alignment.type)
+            putInt("lyric.enterAnim", lyric.enterAnim.type)
+            putInt("lyric.exitAnim", lyric.exitAnim.type)
+            putFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
+            putFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
+            // todo...
 
-                // apply
-                apply()
-            }
+            // apply
+            apply()
+        }?: Log.d(ModuleMain.TAG,"remote null ")
+
     }
 
     fun reload(prefs: SharedPreferences) {
@@ -148,6 +149,8 @@ object AodSettings {
 
         // todo...
         update = true
+
+        Log.d(ModuleMain.TAG, "reload success: $this")
     }
 
     override fun toString(): String {

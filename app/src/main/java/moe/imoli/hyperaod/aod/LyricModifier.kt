@@ -100,6 +100,7 @@ object LyricModifier : AodModifier() {
 
                     // font size
                     textSize = AodSettings.lyric.fontSize
+
                     // font color
                     setTextColor(AodSettings.lyric.fontColor.toInt())
 
