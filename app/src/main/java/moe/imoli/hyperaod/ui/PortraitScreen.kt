@@ -91,11 +91,17 @@ fun PortraitScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // 内容区域，带有状态栏和水平边距
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
         // 顶部：右侧图标按钮
         Row(
             modifier = Modifier
@@ -265,6 +271,7 @@ fun PortraitScreen(
                     )
                 }
             }
+        }
         }
     }
 }
