@@ -12,7 +12,10 @@ import com.hchen.superlyricapi.ISuperLyricReceiver
 import com.hchen.superlyricapi.SuperLyricData
 import com.hchen.superlyricapi.SuperLyricHelper
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import moe.imoli.hyperaod.AodSettings
+import moe.imoli.hyperaod.AodSettings.Alignment.*
 import moe.imoli.hyperaod.ModuleMain
+import moe.imoli.hyperaod.ui.anim.AnimCreator
 
 object LyricModifier : AodModifier() {
 
@@ -26,7 +29,7 @@ object LyricModifier : AodModifier() {
         context: Context,
         dozeHost: Any
     ) {
-
+        if (!AodSettings.lyric.enable) return
         // 歌词样式初始化
         val lyricSwitcher = LyricSwitcher()
         lyricSwitcher.init(context)
@@ -45,9 +48,8 @@ object LyricModifier : AodModifier() {
                     val text = data.lyric?.text ?: return
                     container?.post {
                         if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: $text")
-                        refresh(container,dozeHost)
+                        refresh(container, dozeHost)
                         lyricSwitcher.update(text)
-
                     }
                 }
 
@@ -55,7 +57,7 @@ object LyricModifier : AodModifier() {
 
             override fun onStop(publisher: String?, data: SuperLyricData?) {
                 container?.post {
-                    refresh(container,dozeHost)
+                    refresh(container, dozeHost)
                     lyricSwitcher.update("")
                 }
             }
@@ -89,20 +91,37 @@ object LyricModifier : AodModifier() {
             lyric = TextSwitcher(context)
             lyric.setFactory {
                 TextView(context).apply {
-                    gravity = Gravity.CENTER
+                    // alignemt
+                    gravity = when (AodSettings.lyric.alignment) {
+                        Center -> Gravity.CENTER
+                        Left -> Gravity.START
+                        Right -> Gravity.END
+                    }
+
+                    // font size
+                    textSize = AodSettings.lyric.fontSize
+                    // font color
+                    setTextColor(AodSettings.lyric.fontColor.toInt())
+
                 }
             }
-            lyric.inAnimation = TranslateAnimation(0f, 0f, 200f, 0f)
-                .apply {
-                    duration = 300
-                }
-            lyric.outAnimation = TranslateAnimation(0f, 0f, 0f, -200f)
-                .apply {
-                    duration = 300
-                }
+            lyric.inAnimation =
+                AnimCreator.enter(AodSettings.lyric.enterAnim, AodSettings.lyric.enterAnimDuration)
+            lyric.outAnimation =
+                AnimCreator.exit(AodSettings.lyric.exitAnim, AodSettings.lyric.exitAnimDuration)
 
             lyric.layoutParams =
-                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(
+                        AodSettings.lyric.marginLeft.toInt(),
+                        AodSettings.lyric.marginTop.toInt(),
+                        AodSettings.lyric.marginRight.toInt(),
+                        AodSettings.lyric.marginBottom.toInt()
+                    )
+                }
 
         }
 

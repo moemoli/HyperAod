@@ -43,6 +43,7 @@ class ModuleMain : XposedModule() {
     override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) {
         EzXposed.initOnPackageLoaded(param)
 
+
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
@@ -78,6 +79,7 @@ class ModuleMain : XposedModule() {
                 log(Log.DEBUG, TAG, "plugin connected，next.")
                 setPluginClassLoader(pluginInstance.javaClass.classLoader ?: return@createAfterHook)
                 init = true
+                AodSettings.reload(getRemotePreferences("hook"))
                 DOZE_HOST.toClassOrNull()?.let {
                     it.resolve().apply {
                         // view更新触发
@@ -97,9 +99,11 @@ class ModuleMain : XposedModule() {
                         }.self.createAfterHook {
                             log(Log.DEBUG, TAG, "try prepare aod view")
                             val mAodView =
-                                firstField { name = "mAODView" }.of(it.thisObject).get() as? FrameLayout?
+                                firstField { name = "mAODView" }.of(it.thisObject)
+                                    .get() as? FrameLayout?
                             val mContainer =
-                                firstField { name = "mContainer" }.of(it.thisObject).get() as? FrameLayout?
+                                firstField { name = "mContainer" }.of(it.thisObject)
+                                    .get() as? FrameLayout?
                             val mContext =
                                 firstField { name = "mContext" }.of(it.thisObject).get() as Context
                             ModifierManager.init(mAodView, mContainer, mContext, it.thisObject)
