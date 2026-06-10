@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +53,8 @@ fun PortraitScreen(
     modifier: Modifier = Modifier,
     showAboutButton: Boolean = true,
     onRestartSystemUI: () -> Unit = {},
-    onAbout: () -> Unit = {}
+    onAbout: () -> Unit = {},
+    onSettings: () -> Unit = {}
 ) {
     var showRestartDialog by remember { mutableStateOf(false) }
     
@@ -70,6 +72,25 @@ fun PortraitScreen(
     var exitAnim by remember { mutableStateOf(AodSettings.lyric.exitAnim.type) }
     var enterAnimDuration by remember { mutableStateOf(AodSettings.lyric.enterAnimDuration) }
     var exitAnimDuration by remember { mutableStateOf(AodSettings.lyric.exitAnimDuration) }
+
+    // 设置加载完成后重新同步本地状态
+    val loaded by AodSettings.loaded
+    LaunchedEffect(loaded) {
+        if (loaded) {
+            switchLyric = AodSettings.lyric.enable
+            fontSize = AodSettings.lyric.fontSize
+            fontColor = Color.fromColorLong(AodSettings.lyric.fontColor)
+            marginTop = AodSettings.lyric.marginTop
+            marginBottom = AodSettings.lyric.marginBottom
+            marginLeft = AodSettings.lyric.marginLeft
+            marginRight = AodSettings.lyric.marginRight
+            alignment = AodSettings.lyric.alignment.type
+            enterAnim = AodSettings.lyric.enterAnim.type
+            exitAnim = AodSettings.lyric.exitAnim.type
+            enterAnimDuration = AodSettings.lyric.enterAnimDuration
+            exitAnimDuration = AodSettings.lyric.exitAnimDuration
+        }
+    }
 
     if (showRestartDialog) {
         AlertDialog(
@@ -123,7 +144,7 @@ fun PortraitScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                IconButton(onClick = { /* TODO: 设置 */ }) {
+                IconButton(onClick = onSettings) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_setting),
                         contentDescription = "设置",

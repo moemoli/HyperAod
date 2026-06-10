@@ -7,14 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 import java.io.DataOutputStream
 
@@ -34,15 +31,25 @@ class MainActivity : ComponentActivity() {
                             onRestartSystemUI = { restartSystemUI() }
                         )
                     } else {
-                        var showAbout by remember { mutableStateOf(false) }
-                        if (showAbout) {
-                            AboutScreen(onBack = { showAbout = false })
-                        } else {
-                            PortraitScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                onRestartSystemUI = { restartSystemUI() },
-                                onAbout = { showAbout = true }
-                            )
+                        val navController = rememberNavController()
+                        NavHost(
+                            navController = navController,
+                            startDestination = NavRoutes.Home.route,
+                            modifier = Modifier.padding(innerPadding)
+                        ) {
+                            composable(NavRoutes.Home.route) {
+                                PortraitScreen(
+                                    onRestartSystemUI = { restartSystemUI() },
+                                    onAbout = { navController.navigate(NavRoutes.About.route) },
+                                    onSettings = { navController.navigate(NavRoutes.ModuleSettings.route) }
+                                )
+                            }
+                            composable(NavRoutes.About.route) {
+                                AboutScreen(onBack = { navController.popBackStack() })
+                            }
+                            composable(NavRoutes.ModuleSettings.route) {
+                                ModuleSettingsScreen(onBack = { navController.popBackStack() })
+                            }
                         }
                     }
                 }

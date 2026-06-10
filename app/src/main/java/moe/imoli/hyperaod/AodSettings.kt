@@ -3,12 +3,16 @@ package moe.imoli.hyperaod
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.edit
 import io.github.libxposed.service.RemotePreferences
 import moe.imoli.hyperaod.app.HyperAod
 
 object AodSettings {
+
+    /** 设置是否已从远程加载完成，UI 可观察此状态以在加载后重新同步 */
+    val loaded = mutableStateOf(false)
 
     var lyric = LyricSettings
     private var update = true
@@ -149,6 +153,7 @@ object AodSettings {
 
         // todo...
         update = true
+        loaded.value = true
 
         Log.d(ModuleMain.TAG, "reload success: $this")
     }
