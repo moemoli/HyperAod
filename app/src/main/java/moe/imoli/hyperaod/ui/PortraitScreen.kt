@@ -21,9 +21,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.fromColorLong
+import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.AodSettings
@@ -57,7 +60,7 @@ fun PortraitScreen(
     onSettings: () -> Unit = {}
 ) {
     var showRestartDialog by remember { mutableStateOf(false) }
-    
+
 
     // 歌词设置状态
     var switchLyric by remember { mutableStateOf(AodSettings.lyric.enable) }
@@ -74,9 +77,18 @@ fun PortraitScreen(
     var exitAnimDuration by remember { mutableStateOf(AodSettings.lyric.exitAnimDuration) }
 
     // 设置加载完成后重新同步本地状态
-    val loaded by AodSettings.loaded
-    LaunchedEffect(loaded) {
-        if (loaded) {
+    var reloadTrigger by remember { mutableIntStateOf(0) }
+    DisposableEffect(Unit) {
+        val listener = {
+            val a = reloadTrigger++
+        }
+        AodSettings.addOnReloadedListener(listener)
+        // 已加载过则立即触发一次
+        if (AodSettings.loaded) reloadTrigger++
+        onDispose { }
+    }
+    LaunchedEffect(reloadTrigger) {
+        if (reloadTrigger > 0) {
             switchLyric = AodSettings.lyric.enable
             fontSize = AodSettings.lyric.fontSize
             fontColor = Color.fromColorLong(AodSettings.lyric.fontColor)
@@ -208,7 +220,7 @@ fun PortraitScreen(
                             value = fontColor,
                             onValueChange = {
                                 fontColor = it
-                                AodSettings.lyric.fontColor = it.value.toLong()
+                                AodSettings.lyric.fontColor = it.toColorLong()
 
                             },
                             label = "字体颜色"
@@ -271,8 +283,8 @@ fun PortraitScreen(
                             },
                             "对齐方式",
                             options = listOf(
-                                DropdownOption("左对齐", 0),
-                                DropdownOption("居中", 1),
+                                DropdownOption("居中", 0),
+                                DropdownOption("左对齐", 1),
                                 DropdownOption("右对齐", 2)
                             ),
 

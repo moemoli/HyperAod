@@ -19,9 +19,9 @@ import moe.imoli.hyperaod.ui.anim.AnimCreator
 
 object LyricModifier : AodModifier() {
 
-
     private var receiver: ISuperLyricReceiver.Stub? = null
-
+    private var lyricSwitcher: LyricSwitcher? = null
+    private var initialized = false
 
     override fun init(
         aodView: FrameLayout?,
@@ -30,15 +30,27 @@ object LyricModifier : AodModifier() {
         dozeHost: Any
     ) {
         if (!AodSettings.lyric.enable) return
+
+        // 防止重复初始化：先清理旧的
+        if (initialized) {
+            close()
+        }
+
         // 歌词样式初始化
-        val lyricSwitcher = LyricSwitcher()
-        lyricSwitcher.init(context)
+        val switcher = LyricSwitcher()
+        switcher.init(context)
+        lyricSwitcher = switcher
+
         container?.apply {
             val aodContent = container.asResolver()
                 .firstField { name = "mAodContent" }
                 .get() as ViewGroup
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "add lyricSwitcher")
-            aodContent.addView(lyricSwitcher.lyric)
+            aodContent.addView(switcher.lyric)
+            // 确保视图可见并触发布局
+            switcher.lyric.visibility = android.view.View.VISIBLE
+            switcher.lyric.bringToFront()
+            switcher.lyric.requestLayout()
         }
 
         // 歌词接收
@@ -49,7 +61,7 @@ object LyricModifier : AodModifier() {
                     container?.post {
                         if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: $text")
                         refresh(container, dozeHost)
-                        lyricSwitcher.update(text)
+                        switcher.update(text)
                     }
                 }
 
@@ -58,17 +70,17 @@ object LyricModifier : AodModifier() {
             override fun onStop(publisher: String?, data: SuperLyricData?) {
                 container?.post {
                     refresh(container, dozeHost)
-                    lyricSwitcher.update("")
+                    switcher.update("")
                 }
             }
         }.apply {
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "register receiver")
             SuperLyricHelper.registerReceiver(this)
         }
+        initialized = true
     }
 
     override fun update() {
-
 
     }
 
@@ -80,6 +92,12 @@ object LyricModifier : AodModifier() {
             }
         }
         receiver = null
+        // 移除旧视图
+        lyricSwitcher?.lyric?.let { view ->
+            (view.parent as? ViewGroup)?.removeView(view)
+        }
+        lyricSwitcher = null
+        initialized = false
     }
 
     class LyricSwitcher {
@@ -89,9 +107,10 @@ object LyricModifier : AodModifier() {
         fun init(context: Context) {
             // 歌词样式初始化
             lyric = TextSwitcher(context)
+            // 强制软件渲染，避免硬件层合成问题
             lyric.setFactory {
                 TextView(context).apply {
-                    // alignemt
+                    // alignment
                     gravity = when (AodSettings.lyric.alignment) {
                         Center -> Gravity.CENTER
                         Left -> Gravity.START
@@ -102,7 +121,12 @@ object LyricModifier : AodModifier() {
                     textSize = AodSettings.lyric.fontSize
 
                     // font color
-                    setTextColor(AodSettings.lyric.fontColor.toInt())
+                    val color = AodSettings.lyric.fontColor.toInt()
+                    setTextColor(color)
+                    if (ModuleMain.DEBUG) Log.d(
+                        ModuleMain.TAG,
+                        "TextView created: color=0x${color.toHexString()}, size=${textSize}"
+                    )
 
                 }
             }
@@ -130,6 +154,15 @@ object LyricModifier : AodModifier() {
             lyric.setText(text)
             lyric.invalidate()
             lyric.requestLayout()
+            if (ModuleMain.DEBUG) {
+                val tv = lyric.currentView as? TextView
+                Log.d(
+                    ModuleMain.TAG, "update: text=\"$text\", tv.text=\"${tv?.text}\", " +
+                            "w=${lyric.width}, h=${lyric.height}, vis=${lyric.visibility}, " +
+                            "alpha=${lyric.alpha}, parent=${lyric.parent?.javaClass?.simpleName}, " +
+                            "childCount=${(lyric.parent as? ViewGroup)?.childCount}"
+                )
+            }
         }
 
     }

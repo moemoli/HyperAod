@@ -1,9 +1,7 @@
 package moe.imoli.hyperaod
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.edit
 import io.github.libxposed.service.RemotePreferences
@@ -11,8 +9,17 @@ import moe.imoli.hyperaod.app.HyperAod
 
 object AodSettings {
 
-    /** 设置是否已从远程加载完成，UI 可观察此状态以在加载后重新同步 */
-    val loaded = mutableStateOf(false)
+    /** 设置是否已从远程加载完成 */
+    @Volatile
+    var loaded = false
+        private set
+
+    private val onReloaded = mutableListOf<() -> Unit>()
+
+    /** UI 进程注册回调，在 reload 完成后触发 */
+    fun addOnReloadedListener(listener: () -> Unit) {
+        synchronized(onReloaded) { onReloaded.add(listener) }
+    }
 
     var lyric = LyricSettings
     private var update = true
@@ -64,7 +71,7 @@ object AodSettings {
                 field = value
                 if (update) update()
             }
-        var fontColor: Long = Color.White.value.toLong()
+        var fontColor: Long = android.graphics.Color.WHITE.toLong()
             set(value) {
                 field = value
                 if (update) update()
@@ -96,7 +103,7 @@ object AodSettings {
         override fun toString(): String {
             return "enable=$enable;" +
                     "fontSize=$fontSize;" +
-                    "fontColor=$fontColor;" +
+                    "fontColor=0x${fontColor.toHexString()};" +
                     "marginTop=$marginTop;" +
                     "marginBottom=$marginBottom;" +
                     "marginLeft=$marginLeft;" +
@@ -130,36 +137,48 @@ object AodSettings {
 
             // apply
             apply()
-        }?: Log.d(ModuleMain.TAG,"remote null ")
+        } ?: Log.d(ModuleMain.TAG, "remote null ")
 
     }
 
     fun reload(prefs: SharedPreferences) {
         update = false
+        Int.MAX_VALUE
 
         // lyric
         lyric.enable = prefs.getBoolean("lyric.enable", lyric.enable)
         lyric.fontSize = prefs.getFloat("lyric.fontSize", lyric.fontSize)
-        lyric.fontColor = prefs.getLong("lyric.fontColor", lyric.fontColor)
+        lyric.fontColor = prefs.getLong("lyric.fontColor", lyric.fontColor).takeIf { it != 0L }
+            ?: android.graphics.Color.WHITE.toLong()
         lyric.marginTop = prefs.getFloat("lyric.marginTop", lyric.marginTop)
         lyric.marginBottom = prefs.getFloat("lyric.marginBottom", lyric.marginBottom)
         lyric.marginLeft = prefs.getFloat("lyric.marginLeft", lyric.marginLeft)
-        lyric.marginRight = prefs.getFloat("lyric.marginLeft", lyric.marginRight)
+        lyric.marginRight = prefs.getFloat("lyric.marginRight", lyric.marginRight)
         lyric.enterAnimDuration = prefs.getFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
-        lyric.exitAnimDuration = prefs.getFloat("lyric.enterAnimDuration", lyric.exitAnimDuration)
+        lyric.exitAnimDuration = prefs.getFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
         lyric.enterAnim = Anim.Enter.valueOf(prefs.getInt("lyric.enterAnim", lyric.enterAnim.type))
         lyric.exitAnim = Anim.Exit.valueOf(prefs.getInt("lyric.exitAnim", lyric.exitAnim.type))
         lyric.alignment = Alignment.valueOf(prefs.getInt("lyric.alignment", lyric.alignment.type))
 
         // todo...
         update = true
-        loaded.value = true
+        loaded = true
 
         Log.d(ModuleMain.TAG, "reload success: $this")
+
+        synchronized(onReloaded) { onReloaded.forEach { it() } }
     }
 
     override fun toString(): String {
         return "LyricSetting=($lyric)"
+    }
+
+    fun watch(remotePreferences: SharedPreferences) {
+        if (remotePreferences is RemotePreferences) {
+            remotePreferences.registerOnSharedPreferenceChangeListener { preferences, string ->
+                reload(preferences)
+            }
+        }
     }
 
 

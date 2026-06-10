@@ -80,6 +80,7 @@ class ModuleMain : XposedModule() {
                 setPluginClassLoader(pluginInstance.javaClass.classLoader ?: return@createAfterHook)
                 init = true
                 AodSettings.reload(getRemotePreferences("hook"))
+                AodSettings.watch(getRemotePreferences("hook"))
                 DOZE_HOST.toClassOrNull()?.let {
                     it.resolve().apply {
                         // view更新触发
