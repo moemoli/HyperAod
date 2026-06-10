@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.fromColorLong
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,7 +66,7 @@ fun PortraitScreen(
     // 歌词设置状态
     var switchLyric by remember { mutableStateOf(AodSettings.lyric.enable) }
     var fontSize by remember { mutableStateOf(AodSettings.lyric.fontSize) }
-    var fontColor by remember { mutableStateOf(Color.fromColorLong(AodSettings.lyric.fontColor)) }
+    var fontColor by remember { mutableStateOf(Color(AodSettings.lyric.fontColor.toInt())) }
     var marginTop by remember { mutableStateOf(AodSettings.lyric.marginTop) }
     var marginBottom by remember { mutableStateOf(AodSettings.lyric.marginBottom) }
     var marginLeft by remember { mutableStateOf(AodSettings.lyric.marginLeft) }
@@ -91,7 +92,7 @@ fun PortraitScreen(
         if (reloadTrigger > 0) {
             switchLyric = AodSettings.lyric.enable
             fontSize = AodSettings.lyric.fontSize
-            fontColor = Color.fromColorLong(AodSettings.lyric.fontColor)
+            fontColor = Color(AodSettings.lyric.fontColor.toInt())
             marginTop = AodSettings.lyric.marginTop
             marginBottom = AodSettings.lyric.marginBottom
             marginLeft = AodSettings.lyric.marginLeft
@@ -220,7 +221,7 @@ fun PortraitScreen(
                             value = fontColor,
                             onValueChange = {
                                 fontColor = it
-                                AodSettings.lyric.fontColor = it.toColorLong()
+                                AodSettings.lyric.fontColor = it.toArgb().toLong()
 
                             },
                             label = "字体颜色"

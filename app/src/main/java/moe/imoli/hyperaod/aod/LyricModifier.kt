@@ -117,6 +117,11 @@ object LyricModifier : AodModifier() {
                         Right -> Gravity.END
                     }
 
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    )
+
                     // font size
                     textSize = AodSettings.lyric.fontSize
 

@@ -71,7 +71,7 @@ object AodSettings {
                 field = value
                 if (update) update()
             }
-        var fontColor: Long = android.graphics.Color.WHITE.toLong()
+        var fontColor: Long = -1L // ARGB white (0xFFFFFFFF)
             set(value) {
                 field = value
                 if (update) update()
@@ -103,7 +103,7 @@ object AodSettings {
         override fun toString(): String {
             return "enable=$enable;" +
                     "fontSize=$fontSize;" +
-                    "fontColor=0x${fontColor.toHexString()};" +
+                    "fontColor=0x${fontColor.toInt().toUInt().toString(16)};" +
                     "marginTop=$marginTop;" +
                     "marginBottom=$marginBottom;" +
                     "marginLeft=$marginLeft;" +
@@ -115,7 +115,6 @@ object AodSettings {
                     "exitAnimDuration=$exitAnimDuration;"
         }
 
-
     }
 
     fun update() {
@@ -123,7 +122,7 @@ object AodSettings {
             // lyric
             putBoolean("lyric.enable", lyric.enable)
             putFloat("lyric.fontSize", lyric.fontSize)
-            putLong("lyric.fontColor", lyric.fontColor)
+            putLong("lyric.fontColor", lyric.fontColor.toInt().toLong())
             putFloat("lyric.marginTop", lyric.marginTop)
             putFloat("lyric.marginBottom", lyric.marginBottom)
             putFloat("lyric.marginLeft", lyric.marginLeft)
@@ -143,13 +142,17 @@ object AodSettings {
 
     fun reload(prefs: SharedPreferences) {
         update = false
-        Int.MAX_VALUE
 
         // lyric
         lyric.enable = prefs.getBoolean("lyric.enable", lyric.enable)
         lyric.fontSize = prefs.getFloat("lyric.fontSize", lyric.fontSize)
-        lyric.fontColor = prefs.getLong("lyric.fontColor", lyric.fontColor).takeIf { it != 0L }
-            ?: android.graphics.Color.WHITE.toLong()
+        // 读取颜色值，兼容旧格式（高32位）和新格式（低32位ARGB int）
+        val storedColor = prefs.getLong("lyric.fontColor", -1L)
+        lyric.fontColor = if (storedColor.toInt() == 0 && storedColor != 0L) {
+            storedColor shr 32 // 旧格式：颜色在高32位，右移取ARGB int
+        } else {
+            storedColor // 新格式：已经是ARGB int
+        }
         lyric.marginTop = prefs.getFloat("lyric.marginTop", lyric.marginTop)
         lyric.marginBottom = prefs.getFloat("lyric.marginBottom", lyric.marginBottom)
         lyric.marginLeft = prefs.getFloat("lyric.marginLeft", lyric.marginLeft)

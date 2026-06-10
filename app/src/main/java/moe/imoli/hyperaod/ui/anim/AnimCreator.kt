@@ -9,21 +9,24 @@ object AnimCreator {
     fun enter(type: AodSettings.Anim.Enter, duration: Float): Animation = when (type) {
         AodSettings.Anim.Enter.None -> TranslateAnimation(0f, 0f, 0f, 0f)
         AodSettings.Anim.Enter.FadeIn -> AlphaAnimation(0f, 1f)
-        AodSettings.Anim.Enter.Up -> TranslateAnimation(0f, 0f, 0f, -200f)
-        AodSettings.Anim.Enter.Down -> TranslateAnimation(0f, 0f, 0f, 200f)
-        AodSettings.Anim.Enter.Left -> TranslateAnimation(200f, 0f, 0f, 0f)
-        AodSettings.Anim.Enter.Right -> TranslateAnimation(-200f, 0f, 0f, 0f)
+        AodSettings.Anim.Enter.Up -> TranslateAnimation(0f, 0f, 500f, 0f)
+        AodSettings.Anim.Enter.Down -> TranslateAnimation(0f, 0f, -500f, 0f)
+        AodSettings.Anim.Enter.Left -> TranslateAnimation(0f, -1000f, 0f, 0f)
+        AodSettings.Anim.Enter.Right -> TranslateAnimation(0f, 1000f, 0f, 0f)
+
     }.apply {
         this.duration = duration.toLong()
     }
 
     fun exit(type: AodSettings.Anim.Exit, duration: Float): Animation = when (type) {
+
         AodSettings.Anim.Exit.None -> TranslateAnimation(0f, 0f, 0f, 0f)
-        AodSettings.Anim.Exit.FadeOut -> AlphaAnimation(1f, 0f)
-        AodSettings.Anim.Exit.Up -> TranslateAnimation(0f, 0f, 200f, 0f)
-        AodSettings.Anim.Exit.Down -> TranslateAnimation(0f, 0f, -200f, 0f)
-        AodSettings.Anim.Exit.Left -> TranslateAnimation(0f, -200f, 0f, 0f)
-        AodSettings.Anim.Exit.Right -> TranslateAnimation(0f, 200f, 0f, 0f)
+        AodSettings.Anim.Exit.FadeOut -> AlphaAnimation(0f, 1f)
+        AodSettings.Anim.Exit.Up -> TranslateAnimation(0f, 0f, 0f, -500f)
+        AodSettings.Anim.Exit.Down -> TranslateAnimation(0f, 0f, 0f, 500f)
+        AodSettings.Anim.Exit.Left -> TranslateAnimation(1000f, 0f, 0f, 0f)
+        AodSettings.Anim.Exit.Right -> TranslateAnimation(-1000f, 0f, 0f, 0f)
+
     }.apply {
         this.duration = duration.toLong()
     }
