@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui.settings
+﻿package moe.imoli.hyperaod.ui.settings
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
@@ -122,7 +123,7 @@ fun <T> DropdownField(
                 )
 
                 // 右侧：旋转箭头（Canvas 手绘）
-                val arrowColor = MaterialTheme.colorScheme.onSurfaceVariant
+                val arrowColor = MaterialTheme.colorScheme.outline
                 Box(
                     modifier = Modifier
                         .size(20.dp)

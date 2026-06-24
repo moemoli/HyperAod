@@ -215,7 +215,7 @@ fun PortraitScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                val iconTint = MaterialTheme.colorScheme.outlineVariant
+                val iconTint = MaterialTheme.colorScheme.inverseSurface
                 IconButton(onClick = { showRestartDialog = true }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_restart),

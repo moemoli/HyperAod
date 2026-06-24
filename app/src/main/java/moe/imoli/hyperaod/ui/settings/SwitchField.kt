@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui.settings
+﻿package moe.imoli.hyperaod.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
@@ -77,7 +78,7 @@ fun SwitchField(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary,
-                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
                 uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )

@@ -43,11 +43,11 @@ private val HyperDarkColorScheme = darkColorScheme(
     onErrorContainer = HyperRed90,
     // Surface & Background (HyperOS 深色层次)
     background = HyperGray6,
-    onBackground = HyperGray90,
-    surface = HyperGray6,
-    onSurface = HyperGray90,
+    onBackground = Color(0xFFF4F4F4),
+    surface = Color(0xFF242424),
+    onSurface = Color(0xFFF4F4F4),
     surfaceVariant = HyperBlueGray30,
-    onSurfaceVariant = HyperBlueGray80,
+    onSurfaceVariant = Color(0xFF929292),
     // Surface containers (HyperOS 层叠卡片)
     surfaceTint = HyperBlue80,
     surfaceContainerLowest = HyperGray4,
@@ -57,7 +57,7 @@ private val HyperDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = HyperGray22,
     // Outline
     outline = HyperBlueGray60,
-    outlineVariant = HyperBlueGray30,
+    outlineVariant = Color(0xFFE7E7E7),
     // Inverse
     inverseSurface = HyperGray90,
     inverseOnSurface = HyperGray20,
@@ -94,9 +94,9 @@ private val HyperLightColorScheme = lightColorScheme(
     onErrorContainer = HyperRed10,
     // Surface & Background
     background = Color(0xFFF7F7F7),
-    onBackground = Color(0xFF828282),
+    onBackground = Color(0xFF161616),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF828282),
+    onSurface = Color(0xFF161616),
     surfaceVariant = Color(0xFFE5E5E5),
     onSurfaceVariant = Color(0xFF666666),
     // Surface containers (设置组卡片统一白色)
@@ -107,10 +107,10 @@ private val HyperLightColorScheme = lightColorScheme(
     surfaceContainerHigh = Color(0xFFFFFFFF),
     surfaceContainerHighest = Color(0xFFFFFFFF),
     // Outline (Switch 关闭态、分隔线)
-    outline = Color(0xFFE5E5E5),
+    outline = Color(0xFFEBEBEB),
     outlineVariant = Color(0xFFB1B1B1),
     // Inverse
-    inverseSurface = Color(0xFF313131),
+    inverseSurface = Color(0xFF393939),
     inverseOnSurface = Color(0xFFF7F7F7),
     inversePrimary = HyperBlue80,
     // Scrim & Shadow
@@ -123,7 +123,7 @@ private val HyperLightColorScheme = lightColorScheme(
 fun HyperAodTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
