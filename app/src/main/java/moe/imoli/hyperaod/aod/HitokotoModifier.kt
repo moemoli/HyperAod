@@ -97,7 +97,7 @@ object HitokotoModifier : AodModifier() {
                 val json = org.json.JSONObject(body)
                 val hitokotoText = json.optString("hitokoto", "")
                 val from = json.optString("from", "")
-                val text = if (from.isNotEmpty()) "$hitokotoText ——$from" else hitokotoText
+                val text = if (from.isNotEmpty()) "$hitokotoText" else hitokotoText
                 cachedText = text
                 if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto refreshed: $text")
                 // 若视图已初始化则直接更新
