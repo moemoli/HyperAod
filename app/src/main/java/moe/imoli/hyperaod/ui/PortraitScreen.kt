@@ -625,7 +625,7 @@ fun PortraitScreen(
                                 hitokotoUpdateInterval = it.toInt().coerceAtLeast(AodSettings.MIN_UPDATE_INTERVAL)
                                 AodSettings.hitokoto.updateInterval = hitokotoUpdateInterval
                             },
-                            valueRange = 30f..600f,
+                            valueRange = 30f..86400f,
                             label = "刷新间隔（秒，≥30）"
                         )
                     }
