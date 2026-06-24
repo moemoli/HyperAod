@@ -13,7 +13,8 @@ object ModifierManager {
 
     /** 已注册的所有 Modifier */
     val modifiers = arrayOf(
-        LyricModifier
+        LyricModifier,
+        HitokotoModifier
     )
 
     /** 通知所有 Modifier 数据更新 */

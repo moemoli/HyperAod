@@ -32,7 +32,11 @@ object AodSettings {
         synchronized(onReloaded) { onReloaded.remove(listener) }
     }
 
+    /** 一言刷新间隔下限（秒） */
+    const val MIN_UPDATE_INTERVAL = 30
+
     var lyric = LyricSettings
+    var hitokoto = HitokotoSettings
     private var update = true
 
     /**
@@ -130,10 +134,147 @@ object AodSettings {
                     "enterAnim=;" +
                     "enterAnimDuration=;" +
                     "exitAnim=;" +
+                    "exitAnimDuration=;" +
+                    "updateInterval=;" +
+                    "exitAnim=;" +
                     "exitAnimDuration=;"
         }
     }
 
+
+    /**
+     * 一言展示设置
+     *
+     * 在 AOD 上显示一言文本（来自 hitokoto.cn），支持退出动画和定时刷新。
+     * 每个 setter 在 [update] 为 true 时自动触发远端同步。
+     */
+    object HitokotoSettings {
+        /** 是否启用一言显示 */
+        var enable: Boolean = false
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        /** 字体大小，单位 sp */
+        var fontSize: Float = 16f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        /** 字体颜色，ARGB long 格式 */
+        var fontColor: Long = -1L
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var marginTop: Float = 0f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var marginBottom: Float = 0f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var marginLeft: Float = 0f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var marginRight: Float = 0f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var alignment: Alignment = Alignment.Center
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var enterAnim: Anim.Enter = Anim.Enter.None
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var enterAnimDuration: Float = 200f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var exitAnim: Anim.Exit = Anim.Exit.None
+            set(value) {
+                field = value
+                if (update) update()
+            }
+        var exitAnimDuration: Float = 200f
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
+        /**
+         * 一言内容自动刷新间隔，单位秒，最低 30 秒。
+         */
+        var updateInterval: Int = 60
+            set(value) {
+                field = value.coerceAtLeast(MIN_UPDATE_INTERVAL)
+                if (update) update()
+            }
+
+        /**
+         * 句子类型筛选集合。
+         * 对应 hitokoto.cn API 的 c 参数，值为类型代码（如 "a","b","c"）。
+         * 空集合表示不筛选（请求所有类型）。
+         */
+        var sentenceTypes: MutableSet<String> = mutableSetOf()
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
+        /** 最小字数，0 表示不限制 */
+        var minLength: Int = 0
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
+        /** 最大字数，0 表示不限制 */
+        var maxLength: Int = 0
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
+        fun updateAlignment(type: Int) {
+            alignment = Alignment.valueOf(type)
+        }
+
+        fun updateEnterAnim(type: Int) {
+            enterAnim = Anim.Enter.valueOf(type)
+        }
+
+        fun updateExitAnim(type: Int) {
+            exitAnim = Anim.Exit.valueOf(type)
+        }
+
+        override fun toString(): String {
+            return "enable=;" +
+                    "fontSize=;" +
+                    "fontColor=0x;" +
+                    "marginTop=;" +
+                    "marginBottom=;" +
+                    "marginLeft=;" +
+                    "marginRight=;" +
+                    "alignment=;" +
+                    "enterAnim=;" +
+                    "enterAnimDuration=;" +
+                    "exitAnim=;" +
+                    "exitAnimDuration=;" +
+                    "updateInterval=;"
+        }
+    }
     /** 将当前设置写入远端 SharedPreferences */
     fun update() {
         HyperAod.SERVICE?.getRemotePreferences("hook")?.edit {
@@ -150,7 +291,23 @@ object AodSettings {
             putInt("lyric.exitAnim", lyric.exitAnim.type)
             putFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
             putFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
-            // todo...
+            // hitokoto
+            putBoolean("hitokoto.enable", hitokoto.enable)
+            putFloat("hitokoto.fontSize", hitokoto.fontSize)
+            putLong("hitokoto.fontColor", hitokoto.fontColor.toInt().toLong())
+            putFloat("hitokoto.marginTop", hitokoto.marginTop)
+            putFloat("hitokoto.marginBottom", hitokoto.marginBottom)
+            putFloat("hitokoto.marginLeft", hitokoto.marginLeft)
+            putFloat("hitokoto.marginRight", hitokoto.marginRight)
+            putInt("hitokoto.alignment", hitokoto.alignment.type)
+            putInt("hitokoto.enterAnim", hitokoto.enterAnim.type)
+            putFloat("hitokoto.enterAnimDuration", hitokoto.enterAnimDuration)
+            putInt("hitokoto.exitAnim", hitokoto.exitAnim.type)
+            putFloat("hitokoto.exitAnimDuration", hitokoto.exitAnimDuration)
+            putInt("hitokoto.updateInterval", hitokoto.updateInterval)
+            putString("hitokoto.sentenceTypes", hitokoto.sentenceTypes.joinToString(","))
+            putInt("hitokoto.minLength", hitokoto.minLength)
+            putInt("hitokoto.maxLength", hitokoto.maxLength)
 
             apply()
         } ?: Log.d(ModuleMain.TAG, "remote null")
@@ -180,7 +337,31 @@ object AodSettings {
         lyric.exitAnim = Anim.Exit.valueOf(prefs.getInt("lyric.exitAnim", lyric.exitAnim.type))
         lyric.alignment = Alignment.valueOf(prefs.getInt("lyric.alignment", lyric.alignment.type))
 
-        // todo...
+        // hitokoto
+        hitokoto.enable = prefs.getBoolean("hitokoto.enable", hitokoto.enable)
+        hitokoto.fontSize = prefs.getFloat("hitokoto.fontSize", hitokoto.fontSize)
+        val storedHitokotoColor = prefs.getLong("hitokoto.fontColor", -1L)
+        hitokoto.fontColor = if (storedHitokotoColor.toInt() == 0 && storedHitokotoColor != 0L) {
+            storedHitokotoColor shr 32
+        } else {
+            storedHitokotoColor
+        }
+        hitokoto.marginTop = prefs.getFloat("hitokoto.marginTop", hitokoto.marginTop)
+        hitokoto.marginBottom = prefs.getFloat("hitokoto.marginBottom", hitokoto.marginBottom)
+        hitokoto.marginLeft = prefs.getFloat("hitokoto.marginLeft", hitokoto.marginLeft)
+        hitokoto.marginRight = prefs.getFloat("hitokoto.marginRight", hitokoto.marginRight)
+        hitokoto.enterAnimDuration = prefs.getFloat("hitokoto.enterAnimDuration", hitokoto.enterAnimDuration)
+        hitokoto.enterAnim = Anim.Enter.valueOf(prefs.getInt("hitokoto.enterAnim", hitokoto.enterAnim.type))
+        hitokoto.alignment = Alignment.valueOf(prefs.getInt("hitokoto.alignment", hitokoto.alignment.type))
+        hitokoto.exitAnim = Anim.Exit.valueOf(prefs.getInt("hitokoto.exitAnim", hitokoto.exitAnim.type))
+        hitokoto.exitAnimDuration = prefs.getFloat("hitokoto.exitAnimDuration", hitokoto.exitAnimDuration)
+        hitokoto.updateInterval = prefs.getInt("hitokoto.updateInterval", hitokoto.updateInterval)
+        val storedTypes = prefs.getString("hitokoto.sentenceTypes", "") ?: ""
+        hitokoto.sentenceTypes = if (storedTypes.isEmpty()) mutableSetOf()
+            else storedTypes.split(",").toMutableSet()
+        hitokoto.minLength = prefs.getInt("hitokoto.minLength", hitokoto.minLength)
+        hitokoto.maxLength = prefs.getInt("hitokoto.maxLength", hitokoto.maxLength)
+
         update = true
         loaded = true
 
@@ -190,7 +371,7 @@ object AodSettings {
     }
 
     override fun toString(): String {
-        return "LyricSetting=()"
+        return "LyricSetting=(), HitokotoSetting=()"
     }
 
     /** 注册远端 SharedPreferences 变更监听 */

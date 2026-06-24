@@ -46,6 +46,8 @@ import moe.imoli.hyperaod.ui.settings.DropdownOption
 import moe.imoli.hyperaod.ui.settings.SearchableGroup
 import moe.imoli.hyperaod.ui.settings.SettingsGroup
 import moe.imoli.hyperaod.ui.settings.SliderInputField
+import moe.imoli.hyperaod.ui.settings.CheckboxGroup
+import moe.imoli.hyperaod.ui.settings.CheckboxItem
 import moe.imoli.hyperaod.ui.settings.SwitchField
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 
@@ -77,6 +79,24 @@ fun PortraitScreen(
     var enterAnimDuration by remember { mutableStateOf(AodSettings.lyric.enterAnimDuration) }
     var exitAnimDuration by remember { mutableStateOf(AodSettings.lyric.exitAnimDuration) }
 
+    // 一言设置状态
+    var switchHitokoto by remember { mutableStateOf(AodSettings.hitokoto.enable) }
+    var hitokotoFontSize by remember { mutableStateOf(AodSettings.hitokoto.fontSize) }
+    var hitokotoFontColor by remember { mutableStateOf(Color(AodSettings.hitokoto.fontColor.toInt())) }
+    var hitokotoMarginTop by remember { mutableStateOf(AodSettings.hitokoto.marginTop) }
+    var hitokotoMarginBottom by remember { mutableStateOf(AodSettings.hitokoto.marginBottom) }
+    var hitokotoMarginLeft by remember { mutableStateOf(AodSettings.hitokoto.marginLeft) }
+    var hitokotoMarginRight by remember { mutableStateOf(AodSettings.hitokoto.marginRight) }
+    var hitokotoAlignment by remember { mutableStateOf(AodSettings.hitokoto.alignment.type) }
+    var hitokotoEnterAnim by remember { mutableStateOf(AodSettings.hitokoto.enterAnim.type) }
+    var hitokotoEnterAnimDuration by remember { mutableStateOf(AodSettings.hitokoto.enterAnimDuration) }
+    var hitokotoSentenceTypes by remember { mutableStateOf(AodSettings.hitokoto.sentenceTypes.toSet()) }
+    var hitokotoMinLength by remember { mutableStateOf(AodSettings.hitokoto.minLength) }
+    var hitokotoMaxLength by remember { mutableStateOf(AodSettings.hitokoto.maxLength) }
+    var hitokotoExitAnim by remember { mutableStateOf(AodSettings.hitokoto.exitAnim.type) }
+    var hitokotoExitAnimDuration by remember { mutableStateOf(AodSettings.hitokoto.exitAnimDuration) }
+    var hitokotoUpdateInterval by remember { mutableStateOf(AodSettings.hitokoto.updateInterval) }
+
     // 设置加载完成后重新同步本地状态
     var reloadTrigger by remember { mutableIntStateOf(0) }
     DisposableEffect(Unit) {
@@ -100,6 +120,22 @@ fun PortraitScreen(
             exitAnim = AodSettings.lyric.exitAnim.type
             enterAnimDuration = AodSettings.lyric.enterAnimDuration
             exitAnimDuration = AodSettings.lyric.exitAnimDuration
+            switchHitokoto = AodSettings.hitokoto.enable
+            hitokotoFontSize = AodSettings.hitokoto.fontSize
+            hitokotoFontColor = Color(AodSettings.hitokoto.fontColor.toInt())
+            hitokotoMarginTop = AodSettings.hitokoto.marginTop
+            hitokotoMarginBottom = AodSettings.hitokoto.marginBottom
+            hitokotoMarginLeft = AodSettings.hitokoto.marginLeft
+            hitokotoMarginRight = AodSettings.hitokoto.marginRight
+            hitokotoAlignment = AodSettings.hitokoto.alignment.type
+            hitokotoEnterAnim = AodSettings.hitokoto.enterAnim.type
+            hitokotoEnterAnimDuration = AodSettings.hitokoto.enterAnimDuration
+            hitokotoSentenceTypes = AodSettings.hitokoto.sentenceTypes.toSet()
+            hitokotoMinLength = AodSettings.hitokoto.minLength
+            hitokotoMaxLength = AodSettings.hitokoto.maxLength
+            hitokotoExitAnim = AodSettings.hitokoto.exitAnim.type
+            hitokotoExitAnimDuration = AodSettings.hitokoto.exitAnimDuration
+            hitokotoUpdateInterval = AodSettings.hitokoto.updateInterval
         }
     }
 
@@ -348,6 +384,243 @@ fun PortraitScreen(
                             },
                             valueRange = 0f..2000f,
                             label = "离开动画时长 (ms)"
+                        )
+                    }
+                }
+
+                // 一言设置分组
+                SettingsGroup(
+                    label = "一言设置",
+                    searchQuery = query
+                ) {
+                    item("一言显示") {
+                        SwitchField(
+                            checked = switchHitokoto,
+                            onCheckedChange = {
+                                switchHitokoto = it
+                                AodSettings.hitokoto.enable = it
+                            },
+                            label = "一言显示",
+                            description = "在息屏上显示一言（来自 hitokoto.cn）"
+                        )
+                    }
+                    item("句子类型") {
+                        val sentenceTypeOptions = listOf(
+                            "a" to "动画",
+                            "b" to "漫画",
+                            "c" to "游戏",
+                            "d" to "文学",
+                            "e" to "原创",
+                            "f" to "来自网络",
+                            "g" to "其他",
+                            "h" to "影视",
+                            "i" to "诗词",
+                            "j" to "网易云",
+                            "k" to "哲学",
+                            "l" to "抖"
+                        )
+                        val allChecked = hitokotoSentenceTypes.isEmpty() ||
+                                hitokotoSentenceTypes.size == sentenceTypeOptions.size
+                        CheckboxGroup(
+                            label = "句子类型",
+                            allChecked = allChecked,
+                            onSelectAll = { select ->
+                                val newTypes = if (select) {
+                                    sentenceTypeOptions.map { it.first }.toMutableSet()
+                                } else {
+                                    mutableSetOf()
+                                }
+                                hitokotoSentenceTypes = newTypes
+                                AodSettings.hitokoto.sentenceTypes = newTypes.toMutableSet()
+                            }
+                        ) {
+                            sentenceTypeOptions.forEach { (code, label) ->
+                                CheckboxItem(
+                                    checked = hitokotoSentenceTypes.contains(code) || hitokotoSentenceTypes.isEmpty(),
+                                    onCheckedChange = { checked ->
+                                        val newTypes = hitokotoSentenceTypes.toMutableSet()
+                                        if (hitokotoSentenceTypes.isEmpty()) {
+                                            // 从"全选"状态开始，取消勾选时先填入所有再移除
+                                            newTypes.addAll(sentenceTypeOptions.map { it.first })
+                                        }
+                                        if (checked) newTypes.add(code) else newTypes.remove(code)
+                                        hitokotoSentenceTypes = newTypes
+                                        AodSettings.hitokoto.sentenceTypes = newTypes.toMutableSet()
+                                    },
+                                    label = label
+                                )
+                            }
+                        }
+                    }
+                    item("最小字数") {
+                        SliderInputField(
+                            value = hitokotoMinLength.toFloat(),
+                            onValueChange = {
+                                hitokotoMinLength = it.toInt()
+                                AodSettings.hitokoto.minLength = it.toInt()
+                            },
+                            valueRange = 0f..100f,
+                            label = "最小字数（0=不限）"
+                        )
+                    }
+                    item("最大字数") {
+                        SliderInputField(
+                            value = hitokotoMaxLength.toFloat(),
+                            onValueChange = {
+                                hitokotoMaxLength = it.toInt()
+                                AodSettings.hitokoto.maxLength = it.toInt()
+                            },
+                            valueRange = 0f..200f,
+                            label = "最大字数（0=不限）"
+                        )
+                    }
+                    item("字体大小") {
+                        SliderInputField(
+                            value = hitokotoFontSize,
+                            onValueChange = {
+                                hitokotoFontSize = it
+                                AodSettings.hitokoto.fontSize = it
+                            },
+                            valueRange = 12f..72f,
+                            label = "字体大小"
+                        )
+                    }
+                    item("字体颜色") {
+                        ColorInputField(
+                            value = hitokotoFontColor,
+                            onValueChange = {
+                                hitokotoFontColor = it
+                                AodSettings.hitokoto.fontColor = it.toArgb().toLong()
+                            },
+                            label = "字体颜色"
+                        )
+                    }
+                    item("上边距") {
+                        SliderInputField(
+                            value = hitokotoMarginTop,
+                            onValueChange = {
+                                hitokotoMarginTop = it
+                                AodSettings.hitokoto.marginTop = it
+                            },
+                            valueRange = 0f..500f,
+                            label = "上边距"
+                        )
+                    }
+                    item("下边距") {
+                        SliderInputField(
+                            value = hitokotoMarginBottom,
+                            onValueChange = {
+                                hitokotoMarginBottom = it
+                                AodSettings.hitokoto.marginBottom = it
+                            },
+                            valueRange = 0f..500f,
+                            label = "下边距"
+                        )
+                    }
+                    item("左边距") {
+                        SliderInputField(
+                            value = hitokotoMarginLeft,
+                            onValueChange = {
+                                hitokotoMarginLeft = it
+                                AodSettings.hitokoto.marginLeft = it
+                            },
+                            valueRange = 0f..500f,
+                            label = "左边距"
+                        )
+                    }
+                    item("右边距") {
+                        SliderInputField(
+                            value = hitokotoMarginRight,
+                            onValueChange = {
+                                hitokotoMarginRight = it
+                                AodSettings.hitokoto.marginRight = it
+                            },
+                            valueRange = 0f..500f,
+                            label = "右边距"
+                        )
+                    }
+                    item("对齐方式") {
+                        DropdownField(
+                            value = hitokotoAlignment,
+                            onValueChange = {
+                                hitokotoAlignment = it
+                                AodSettings.hitokoto.updateAlignment(it)
+                            },
+                            "对齐方式",
+                            options = listOf(
+                                DropdownOption("居中", 0),
+                                DropdownOption("左对齐", 1),
+                                DropdownOption("右对齐", 2)
+                            )
+                        )
+                    }
+                    item("进入动画") {
+                        DropdownField(
+                            value = hitokotoEnterAnim,
+                            onValueChange = {
+                                hitokotoEnterAnim = it
+                                AodSettings.hitokoto.updateEnterAnim(it)
+                            },
+                            "进入动画",
+                            options = listOf(
+                                DropdownOption("无", 0),
+                                DropdownOption("淡入", 1),
+                                DropdownOption("上滑", 2),
+                                DropdownOption("下滑", 3),
+                                DropdownOption("左滑", 4),
+                                DropdownOption("右滑", 5)
+                            )
+                        )
+                    }
+                    item("进入动画时长") {
+                        SliderInputField(
+                            value = hitokotoEnterAnimDuration,
+                            onValueChange = {
+                                hitokotoEnterAnimDuration = it
+                                AodSettings.hitokoto.enterAnimDuration = it
+                            },
+                            valueRange = 0f..2000f,
+                            label = "进入动画时长 (ms)"
+                        )
+                    }
+                    item("退出动画") {
+                        DropdownField(
+                            value = hitokotoExitAnim,
+                            onValueChange = {
+                                hitokotoExitAnim = it
+                                AodSettings.hitokoto.updateExitAnim(it)
+                            },
+                            "退出动画",
+                            options = listOf(
+                                DropdownOption("无", 0),
+                                DropdownOption("淡出", 1),
+                                DropdownOption("上滑", 2),
+                                DropdownOption("下滑", 3),
+                                DropdownOption("左滑", 4),
+                                DropdownOption("右滑", 5)
+                            )
+                        )
+                    }
+                    item("退出动画时长") {
+                        SliderInputField(
+                            value = hitokotoExitAnimDuration,
+                            onValueChange = {
+                                hitokotoExitAnimDuration = it
+                                AodSettings.hitokoto.exitAnimDuration = it
+                            },
+                            valueRange = 0f..2000f,
+                            label = "退出动画时长 (ms)"
+                        )
+                    }
+                    item("刷新间隔") {
+                        SliderInputField(
+                            value = hitokotoUpdateInterval.toFloat(),
+                            onValueChange = {
+                                hitokotoUpdateInterval = it.toInt().coerceAtLeast(AodSettings.MIN_UPDATE_INTERVAL)
+                                AodSettings.hitokoto.updateInterval = hitokotoUpdateInterval
+                            },
+                            valueRange = 30f..600f,
+                            label = "刷新间隔（秒，≥30）"
                         )
                     }
                 }
