@@ -42,7 +42,6 @@ object HitokotoModifier : AodModifier() {
     private val handler = Handler(Looper.getMainLooper())
     private val refreshRunnable = Runnable { onRefresh() }
 
-    /** 是否使用共享 TextSwitcher */
     private val useShared get() = AodSettings.behavior.hideHitokotoWhenLyric
 
     fun prefetch() {
@@ -61,13 +60,10 @@ object HitokotoModifier : AodModifier() {
                 conn.connectTimeout = 5000
                 conn.readTimeout = 5000
                 conn.connect()
-                val body = conn.inputStream.bufferedReader().use { it.readText() }
+                val text = conn.inputStream.bufferedReader().use { it.readText() }.trim()
                 conn.disconnect()
-                val json = org.json.JSONObject(body)
-                val hitokotoText = json.optString("hitokoto", "")
-                val from = json.optString("from", "")
-                cachedText = if (from.isNotEmpty()) "$hitokotoText ——$from" else hitokotoText
-                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto cached: $cachedText")
+                cachedText = text
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto cached: $text")
             } catch (e: Exception) {
                 Log.e(ModuleMain.TAG, "Failed to fetch hitokoto", e)
             }
@@ -84,12 +80,8 @@ object HitokotoModifier : AodModifier() {
                 conn.connectTimeout = 5000
                 conn.readTimeout = 5000
                 conn.connect()
-                val body = conn.inputStream.bufferedReader().use { it.readText() }
+                val text = conn.inputStream.bufferedReader().use { it.readText() }.trim()
                 conn.disconnect()
-                val json = org.json.JSONObject(body)
-                val hitokotoText = json.optString("hitokoto", "")
-                val from = json.optString("from", "")
-                val text = if (from.isNotEmpty()) "$hitokotoText ——$from" else hitokotoText
                 cachedText = text
                 if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto refreshed: $text")
                 if (initialized) {
@@ -139,10 +131,8 @@ object HitokotoModifier : AodModifier() {
         this.dozeHost = dozeHost
 
         if (useShared) {
-            // 共享模式：不创建自己的视图，使用 SharedTextSwitcher
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto using SharedTextSwitcher")
         } else {
-            // 独立模式：创建自己的 HitokotoSwitcher
             val switcher = HitokotoSwitcher()
             switcher.init(context)
             hitokotoSwitcher = switcher
@@ -159,7 +149,6 @@ object HitokotoModifier : AodModifier() {
             }
         }
 
-        // 使用预取缓存
         val cached = cachedText
         if (cached != null) {
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto using cached: $cached")
@@ -182,23 +171,10 @@ object HitokotoModifier : AodModifier() {
         onRefresh()
     }
 
-    /**
-     * 更新一言可见性。
-     *
-     * 共享模式下仅管理定时刷新，不操作视图显隐（由 SharedTextSwitcher 管理切换）。
-     * 独立模式下直接隐藏/显示一言视图。
-     */
-    /**
-     * 在共享模式下恢复一言显示。
-     *
-     * 由 [LyricModifier] 在歌词停止时调用，
-     * 使用缓存文本通过 [SharedTextSwitcher] 显示一言。
-     * 若缓存为空则触发一次新的获取。
-     */
     fun restoreInShared() {
         val cached = cachedText
         if (cached != null) {
-            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto restoreInShared: ")
+            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto restoreInShared: $cached")
             SharedTextSwitcher.showHitokoto(cached)
         } else {
             fetchAndDisplayInShared()
@@ -206,14 +182,11 @@ object HitokotoModifier : AodModifier() {
         startPeriodicRefresh()
     }
 
-    /**
-     * 获取一言文本并直接在 SharedTextSwitcher 中显示（不依赖 initialized）。
-     */
     private fun fetchAndDisplayInShared() {
         Thread {
             try {
                 val url = buildRequestUrl()
-                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto fetch for shared: ")
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto fetch for shared: $url")
                 val conn = url.openConnection() as java.net.HttpURLConnection
                 conn.requestMethod = "GET"
                 conn.connectTimeout = 5000
@@ -222,7 +195,7 @@ object HitokotoModifier : AodModifier() {
                 val text = conn.inputStream.bufferedReader().use { it.readText() }.trim()
                 conn.disconnect()
                 cachedText = text
-                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto fetched for shared: ")
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto fetched for shared: $text")
                 Handler(Looper.getMainLooper()).post {
                     SharedTextSwitcher.showHitokoto(text)
                 }
@@ -236,7 +209,6 @@ object HitokotoModifier : AodModifier() {
         if (!initialized) return
         val shouldHide = AodSettings.behavior.hideHitokotoWhenLyric && AodSettings.lyricPlaying
         if (useShared) {
-            // 共享模式：只管理定时刷新，不动视图
             if (shouldHide) {
                 handler.removeCallbacks(refreshRunnable)
                 refreshScheduled = false
@@ -246,7 +218,6 @@ object HitokotoModifier : AodModifier() {
                 if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto refresh resumed")
             }
         } else {
-            // 独立模式：管理视图显隐
             val view = hitokotoSwitcher?.view ?: return
             if (shouldHide) {
                 handler.removeCallbacks(refreshRunnable)
@@ -284,21 +255,16 @@ object HitokotoModifier : AodModifier() {
         handler.removeCallbacks(refreshRunnable)
         refreshScheduled = false
         if (!useShared) {
-            // 独立模式：移除自己的视图
             hitokotoSwitcher?.view?.let { view ->
                 (view.parent as? ViewGroup)?.removeView(view)
             }
         }
-        // 共享模式：SharedTextSwitcher 由 LyricModifier.close() 负责释放
         hitokotoSwitcher = null
         container = null
         dozeHost = null
         initialized = false
     }
 
-    /**
-     * 一言文本切换器（独立模式使用）
-     */
     class HitokotoSwitcher {
         lateinit var view: TextSwitcher
 
