@@ -46,6 +46,7 @@ import moe.imoli.hyperaod.ui.settings.DropdownOption
 import moe.imoli.hyperaod.ui.settings.SearchableGroup
 import moe.imoli.hyperaod.ui.settings.SettingsGroup
 import moe.imoli.hyperaod.ui.settings.SliderInputField
+import moe.imoli.hyperaod.ui.settings.DragSortField
 import moe.imoli.hyperaod.ui.settings.CheckboxGroup
 import moe.imoli.hyperaod.ui.settings.CheckboxItem
 import moe.imoli.hyperaod.ui.settings.SwitchField
@@ -99,6 +100,7 @@ fun PortraitScreen(
 
     // 行为设置状态
     var hideHitokotoWhenLyric by remember { mutableStateOf(AodSettings.behavior.hideHitokotoWhenLyric) }
+    var displayOrder by remember { mutableStateOf(AodSettings.behavior.displayOrder.toList()) }
 
     // 设置加载完成后重新同步本地状态
     var reloadTrigger by remember { mutableIntStateOf(0) }
@@ -140,6 +142,7 @@ fun PortraitScreen(
             hitokotoExitAnimDuration = AodSettings.hitokoto.exitAnimDuration
             hitokotoUpdateInterval = AodSettings.hitokoto.updateInterval
             hideHitokotoWhenLyric = AodSettings.behavior.hideHitokotoWhenLyric
+            displayOrder = AodSettings.behavior.displayOrder.toList()
         }
     }
 
@@ -228,7 +231,8 @@ fun PortraitScreen(
             SearchableGroup { query ->
                 SettingsGroup(
                     label = "歌词设置",
-                    searchQuery = query
+                    searchQuery = query,
+                    defaultExpanded = false
                 ) {
                     item("歌词显示") {
                         SwitchField(
@@ -395,7 +399,8 @@ fun PortraitScreen(
                 // 一言设置分组
                 SettingsGroup(
                     label = "一言设置",
-                    searchQuery = query
+                    searchQuery = query,
+                    defaultExpanded = false
                 ) {
                     item("一言显示") {
                         SwitchField(
@@ -632,7 +637,8 @@ fun PortraitScreen(
                 // 行为设置分组
                 SettingsGroup(
                     label = "行为设置",
-                    searchQuery = query
+                    searchQuery = query,
+                    defaultExpanded = false
                 ) {
                     item("歌词播放时隐藏一言") {
                         SwitchField(
@@ -644,6 +650,42 @@ fun PortraitScreen(
                             label = "隐藏一言",
                             description = "歌词正在播放时自动隐藏一言显示"
                         )
+                    }
+                    if (!hideHitokotoWhenLyric) {
+                        item("显示顺序") {
+                            val labelMap = mapOf(
+                                "lyric" to "歌词",
+                                "hitokoto" to "一言"
+                            )
+                            Column {
+                                Text(
+                                    text = "显示顺序",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "长按拖动调整歌词与一言的上下层级",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                DragSortField(
+                                    items = displayOrder,
+                                    onReorder = { newList ->
+                                        displayOrder = newList
+                                        AodSettings.behavior.displayOrder = newList.toMutableList()
+                                    },
+                                    labelOf = { labelMap[it] ?: it }
+                                ) { id ->
+                                    Text(
+                                        text = labelMap[id] ?: id,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

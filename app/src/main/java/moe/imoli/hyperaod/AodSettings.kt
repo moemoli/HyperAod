@@ -315,6 +315,7 @@ object AodSettings {
             putInt("hitokoto.maxLength", hitokoto.maxLength)
             // behavior
             putBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
+            putString("behavior.displayOrder", behavior.displayOrder.joinToString(","))
 
             apply()
         } ?: Log.d(ModuleMain.TAG, "remote null")
@@ -371,6 +372,10 @@ object AodSettings {
 
         // behavior
         behavior.hideHitokotoWhenLyric = prefs.getBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
+        val storedOrder = prefs.getString("behavior.displayOrder", "") ?: ""
+        if (storedOrder.isNotEmpty()) {
+            behavior.displayOrder = storedOrder.split(",").toMutableList()
+        }
 
         update = true
         loaded = true
@@ -406,8 +411,20 @@ object AodSettings {
                 if (update) update()
             }
 
+        /**
+         * 歌词与一言的显示顺序。
+         * 列表第一项先添加到视图（底层），第二项后添加（顶层）。
+         * 仅在 [hideHitokotoWhenLyric] 为 false 时生效。
+         * 值为 modifier 标识："lyric"、"hitokoto"。
+         */
+        var displayOrder: MutableList<String> = mutableListOf("lyric", "hitokoto")
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
         override fun toString(): String {
-            return "hideHitokotoWhenLyric="
+            return "hideHitokotoWhenLyric=;displayOrder="
         }
     }
 
