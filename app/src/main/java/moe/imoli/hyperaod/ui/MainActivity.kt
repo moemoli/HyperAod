@@ -1,6 +1,7 @@
 package moe.imoli.hyperaod.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +13,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import moe.imoli.hyperaod.ModuleMain
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
 import java.io.DataOutputStream
 
@@ -65,8 +67,8 @@ class MainActivity : ComponentActivity() {
             os.writeBytes("exit\n")
             os.flush()
             process.waitFor()
-        } catch (_: Exception) {
-            // 非 root 环境静默失败
+        } catch (e: Exception) {
+            Log.e(ModuleMain.TAG, "Failed to restart SystemUI (non-root environment?)", e)
         }
     }
 }

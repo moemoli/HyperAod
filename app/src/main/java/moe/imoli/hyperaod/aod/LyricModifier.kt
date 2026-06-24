@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.aod
+﻿package moe.imoli.hyperaod.aod
 
 import android.content.Context
 import android.util.Log
@@ -17,6 +17,12 @@ import moe.imoli.hyperaod.AodSettings.Alignment.*
 import moe.imoli.hyperaod.ModuleMain
 import moe.imoli.hyperaod.ui.anim.AnimCreator
 
+/**
+ * 歌词 Modifier
+ *
+ * 在 AOD 上显示当前播放的歌词，通过 SuperLyric API 接收歌词数据，
+ * 使用 [TextSwitcher] 实现歌词切换动画。
+ */
 object LyricModifier : AodModifier() {
 
     private var receiver: ISuperLyricReceiver.Stub? = null
@@ -59,12 +65,11 @@ object LyricModifier : AodModifier() {
                 if (data?.hasLyric() ?: return) {
                     val text = data.lyric?.text ?: return
                     container?.post {
-                        if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: $text")
+                        if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: ")
                         refresh(container, dozeHost)
                         switcher.update(text)
                     }
                 }
-
             }
 
             override fun onStop(publisher: String?, data: SuperLyricData?) {
@@ -81,7 +86,6 @@ object LyricModifier : AodModifier() {
     }
 
     override fun update() {
-
     }
 
     override fun close() {
@@ -100,17 +104,23 @@ object LyricModifier : AodModifier() {
         initialized = false
     }
 
+    /**
+     * 歌词切换器
+     *
+     * 封装 [TextSwitcher] 的创建和更新逻辑，根据 [AodSettings.lyric] 配置样式。
+     */
     class LyricSwitcher {
         lateinit var lyric: TextSwitcher
 
-
+        /**
+         * 初始化 TextSwitcher，根据当前设置配置样式和动画。
+         */
         fun init(context: Context) {
-            // 歌词样式初始化
             lyric = TextSwitcher(context)
             // 强制软件渲染，避免硬件层合成问题
             lyric.setFactory {
                 TextView(context).apply {
-                    // alignment
+                    // 对齐方式
                     gravity = when (AodSettings.lyric.alignment) {
                         Center -> Gravity.CENTER
                         Left -> Gravity.START
@@ -122,24 +132,25 @@ object LyricModifier : AodModifier() {
                         FrameLayout.LayoutParams.WRAP_CONTENT
                     )
 
-                    // font size
+                    // 字体大小
                     textSize = AodSettings.lyric.fontSize
 
-                    // font color
+                    // 字体颜色
                     val color = AodSettings.lyric.fontColor.toInt()
                     setTextColor(color)
                     if (ModuleMain.DEBUG) Log.d(
                         ModuleMain.TAG,
-                        "TextView created: color=0x${color.toHexString()}, size=${textSize}"
+                        "TextView created: color=0x, size="
                     )
-
                 }
             }
+            // 切换动画
             lyric.inAnimation =
                 AnimCreator.enter(AodSettings.lyric.enterAnim, AodSettings.lyric.enterAnimDuration)
             lyric.outAnimation =
                 AnimCreator.exit(AodSettings.lyric.exitAnim, AodSettings.lyric.exitAnimDuration)
 
+            // 布局参数（含外边距）
             lyric.layoutParams =
                 FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -152,9 +163,13 @@ object LyricModifier : AodModifier() {
                         AodSettings.lyric.marginBottom.toInt()
                     )
                 }
-
         }
 
+        /**
+         * 更新歌词文本。
+         *
+         * @param text 要显示的歌词文本，空字符串表示清除
+         */
         fun update(text: CharSequence) {
             lyric.setText(text)
             lyric.invalidate()
@@ -162,13 +177,12 @@ object LyricModifier : AodModifier() {
             if (ModuleMain.DEBUG) {
                 val tv = lyric.currentView as? TextView
                 Log.d(
-                    ModuleMain.TAG, "update: text=\"$text\", tv.text=\"${tv?.text}\", " +
-                            "w=${lyric.width}, h=${lyric.height}, vis=${lyric.visibility}, " +
-                            "alpha=${lyric.alpha}, parent=${lyric.parent?.javaClass?.simpleName}, " +
-                            "childCount=${(lyric.parent as? ViewGroup)?.childCount}"
+                    ModuleMain.TAG, "update: text=\"\", tv.text=\"\", " +
+                            "w=, h=, vis=, " +
+                            "alpha=, parent=, " +
+                            "childCount="
                 )
             }
         }
-
     }
 }

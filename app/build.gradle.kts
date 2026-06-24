@@ -56,7 +56,7 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 }
 
 dependencies {
-    // LSPosed API 101
+    // LSPosed API 102
     implementation(libs.libxposed.service)
     compileOnly(libs.libxposed.api)
 

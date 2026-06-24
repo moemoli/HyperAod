@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui
+﻿package moe.imoli.hyperaod.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,13 +80,11 @@ fun PortraitScreen(
     // 设置加载完成后重新同步本地状态
     var reloadTrigger by remember { mutableIntStateOf(0) }
     DisposableEffect(Unit) {
-        val listener = {
-            val a = reloadTrigger++
-        }
+        val listener: () -> Unit = { reloadTrigger++ }
         AodSettings.addOnReloadedListener(listener)
         // 已加载过则立即触发一次
         if (AodSettings.loaded) reloadTrigger++
-        onDispose { }
+        onDispose { AodSettings.removeOnReloadedListener(listener) }
     }
     LaunchedEffect(reloadTrigger) {
         if (reloadTrigger > 0) {

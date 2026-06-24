@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod
+﻿package moe.imoli.hyperaod
 
 import android.content.Context
 import android.util.Log
@@ -8,20 +8,22 @@ import com.highcapable.kavaref.extension.ClassLoaderProvider
 import com.highcapable.kavaref.extension.toClassOrNull
 import io.github.kyuubiran.ezxhelper.core.EzXReflection
 import io.github.kyuubiran.ezxhelper.xposed.EzXposed
-import io.github.kyuubiran.ezxhelper.xposed.dsl.HookFactory.`-Static`.createAfterHook
+import io.github.kyuubiran.ezxhelper.xposed.dsl.HookFactory.-Static.createAfterHook
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import moe.imoli.hyperaod.aod.ModifierManager
 
-
+/**
+ * Xposed 模块入口
+ *
+ * Hook SystemUI 的 DozeServicePluginImpl，在 AOD 显示时注入自定义 Modifier。
+ */
 class ModuleMain : XposedModule() {
 
     companion object {
         const val TAG = "HyperAod"
         private const val SYSTEMUI_PKG = "com.android.systemui"
 
-        //private const val DOZE_SERVICE = "com.android.systemui.doze.DozeService"
-        //private const val DOZE_SERVICE = "com.android.keyguard.doze.MiuiDozeService"
         private const val DOZE_SERVICE = "com.android.systemui.shared.plugins.PluginInstance"
         private const val DOZE_PLUGIN_IMPL = "com.miui.aod.doze.DozeServicePluginImpl"
         private const val DOZE_HOST = "com.miui.aod.DozeHost"
@@ -29,28 +31,24 @@ class ModuleMain : XposedModule() {
         private const val FIELD_S_HOST = "sHost"
 
         var DEBUG = BuildConfig.DEBUG
-
-
     }
 
+    /** 是否已完成首次初始化 */
     private var init = false
 
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         EzXposed.initOnModuleLoaded(this, param)
-
     }
 
     override fun onPackageLoaded(param: XposedModuleInterface.PackageLoadedParam) {
         EzXposed.initOnPackageLoaded(param)
-
-
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
         EzXposed.initOnPackageReady(param)
         setPluginClassLoader(param.classLoader)
         if (param.packageName != SYSTEMUI_PKG) return
-        log(Log.DEBUG, TAG, "try load for package ${param.packageName}")
+        log(Log.DEBUG, TAG, "try load for package ")
 
         val dozeClazz = DOZE_SERVICE.toClassOrNull() ?: run {
             log(Log.ERROR, TAG, "DozeService class not found")
@@ -59,7 +57,8 @@ class ModuleMain : XposedModule() {
 
         val resolved = dozeClazz.resolve()
         log(Log.DEBUG, TAG, "try find plugin service")
-        // 当 plugin 连接时：尝试拿到 mDozePlugin 并初始化 plugin 的 classloader + hook DozeServicePluginImpl
+
+        // Plugin 连接时：拿到 DozePlugin 并初始化 plugin 的 classloader + hook DozeServicePluginImpl
         resolved.lastMethod {
             name = "loadPlugin"
         }
@@ -76,24 +75,22 @@ class ModuleMain : XposedModule() {
                 }
 
                 if (init) return@createAfterHook
-                log(Log.DEBUG, TAG, "plugin connected，next.")
+                log(Log.DEBUG, TAG, "plugin connected, next.")
                 setPluginClassLoader(pluginInstance.javaClass.classLoader ?: return@createAfterHook)
                 init = true
                 AodSettings.reload(getRemotePreferences("hook"))
                 AodSettings.watch(getRemotePreferences("hook"))
                 DOZE_HOST.toClassOrNull()?.let {
                     it.resolve().apply {
-                        // view更新触发
+                        // 视图更新时触发（当前未启用）
                         firstMethod { name = "dealWithChange" }.self.createAfterHook {
-                            //log(Log.ERROR, TAG, "update aod view")
-                            //ModifierManager.update()
+                            // ModifierManager.update()
                         }
                         // 销毁时触发
                         firstMethod { name = "destroy" }.self.createAfterHook {
-                            //log(Log.ERROR, TAG, "update aod view")
                             ModifierManager.close()
                         }
-                        // 显示时触发
+                        // AOD 显示时触发
                         firstMethod {
                             name = "prepareAodViewAndShow"
                             parameterCount = 0
@@ -113,7 +110,7 @@ class ModuleMain : XposedModule() {
                 }
             }
 
-        // 当 plugin 断开时：还原 classloader
+        // Plugin 断开时：还原 classloader
         resolved.firstMethod { name = "unloadPlugin" }
             .self
             .createAfterHook {
@@ -125,6 +122,14 @@ class ModuleMain : XposedModule() {
 
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
         EzXposed.initOnSystemServerStarting(param)
+    }
+
+    override fun onHotReloading(param: XposedModuleInterface.HotReloadingParam): Boolean {
+        return super.onHotReloading(param)
+    }
+
+    override fun onHotReloaded(param: XposedModuleInterface.HotReloadedParam) {
+        super.onHotReloaded(param)
     }
 
     private fun setPluginClassLoader(cl: ClassLoader) {
