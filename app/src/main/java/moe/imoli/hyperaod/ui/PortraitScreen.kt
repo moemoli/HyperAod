@@ -103,16 +103,29 @@ fun PortraitScreen(
     var hideHitokotoWhenLyric by remember { mutableStateOf(AodSettings.behavior.hideHitokotoWhenLyric) }
     var displayOrder by remember { mutableStateOf(AodSettings.behavior.displayOrder.toList()) }
 
-    // 模块激活状态
-    var moduleActivated by remember { mutableStateOf(HyperAod.SERVICE != null) }
+    // 模块激活状态：null = 等待检测，true = 已激活，false = 确认未激活
+    var moduleActivated by remember { mutableStateOf<Boolean?>(null) }
     DisposableEffect(Unit) {
         val listener = object : HyperAod.ServiceStateListener {
             override fun onServiceStateChanged(service: io.github.libxposed.service.XposedService?) {
-                moduleActivated = service != null
+                if (service != null) {
+                    moduleActivated = true
+                }
+                // 服务未绑定时不立即设为 false，由下方延迟兜底
             }
         }
         HyperAod.addServiceStateListener(listener, notifyImmediately = true)
-        onDispose { HyperAod.removeServiceStateListener(listener) }
+        // 延迟 500ms 后若仍未收到服务绑定回调，才确认未激活
+        val delayedCheck = android.os.Handler(android.os.Looper.getMainLooper())
+        delayedCheck.postDelayed({
+            if (moduleActivated == null) {
+                moduleActivated = HyperAod.SERVICE != null
+            }
+        }, 500L)
+        onDispose {
+            HyperAod.removeServiceStateListener(listener)
+            delayedCheck.removeCallbacksAndMessages(null)
+        }
     }
 
     // 设置加载完成后重新同步本地状态
@@ -240,7 +253,7 @@ fun PortraitScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (!moduleActivated) {
+            if (moduleActivated == false) {
                 // 模块未激活提示
                 Column(
                     modifier = Modifier
