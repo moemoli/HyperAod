@@ -9,6 +9,8 @@ import moe.imoli.hyperaod.AodSettings
  * 动画创建器
  *
  * 根据 [AodSettings.Anim] 配置创建对应的进入/退出动画。
+ * 进入动画设置 [Animation.setFillBefore] = true，确保从初始状态开始。
+ * 退出动画设置 [Animation.setFillAfter] = true，确保保持结束状态。
  */
 object AnimCreator {
 
@@ -20,11 +22,12 @@ object AnimCreator {
      */
     fun enter(type: AodSettings.Anim.Enter, duration: Float): Animation = when (type) {
         AodSettings.Anim.Enter.None -> TranslateAnimation(0f, 0f, 0f, 0f)
-        AodSettings.Anim.Enter.FadeIn -> AlphaAnimation(0f, 1f).apply { fillBefore = true }
+        AodSettings.Anim.Enter.FadeIn -> AlphaAnimation(0f, 1f)
         AodSettings.Anim.Enter.Up -> TranslateAnimation(0f, 0f, 500f, 0f)
         AodSettings.Anim.Enter.Down -> TranslateAnimation(0f, 0f, -500f, 0f)
     }.apply {
         this.duration = duration.toLong()
+        fillBefore = true
     }
 
     /**
@@ -35,10 +38,11 @@ object AnimCreator {
      */
     fun exit(type: AodSettings.Anim.Exit, duration: Float): Animation = when (type) {
         AodSettings.Anim.Exit.None -> TranslateAnimation(0f, 0f, 0f, 0f)
-        AodSettings.Anim.Exit.FadeOut -> AlphaAnimation(1f, 0f).apply { fillAfter = true }
+        AodSettings.Anim.Exit.FadeOut -> AlphaAnimation(1f, 0f)
         AodSettings.Anim.Exit.Up -> TranslateAnimation(0f, 0f, 0f, -500f)
         AodSettings.Anim.Exit.Down -> TranslateAnimation(0f, 0f, 0f, 500f)
     }.apply {
         this.duration = duration.toLong()
+        fillAfter = true
     }
 }

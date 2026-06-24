@@ -176,6 +176,14 @@ object LyricModifier : AodModifier() {
         }
 
         fun update(text: CharSequence) {
+            // 清除子视图残留动画状态，避免新动画跳帧
+            for (i in 0 until lyric.childCount) {
+                val child = lyric.getChildAt(i)
+                child.clearAnimation()
+                child.alpha = 1f
+                child.translationX = 0f
+                child.translationY = 0f
+            }
             lyric.setText(text)
             lyric.invalidate()
             lyric.requestLayout()

@@ -105,13 +105,12 @@ object SharedTextSwitcher {
     fun showLyric(text: CharSequence) {
         val ts = switcher ?: return
         if (currentMode != Mode.LYRIC) {
-            // 从一言切到歌词：一言退出 + 歌词进入
             ts.outAnimation = AnimCreator.exit(AodSettings.hitokoto.exitAnim, AodSettings.hitokoto.exitAnimDuration)
             ts.inAnimation = AnimCreator.enter(AodSettings.lyric.enterAnim, AodSettings.lyric.enterAnimDuration)
             currentMode = Mode.LYRIC
+            resetAnimationState(ts)
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "SharedTextSwitcher: HITOKOTO -> LYRIC")
         } else {
-            // 歌词内部更新
             ts.outAnimation = AnimCreator.exit(AodSettings.lyric.exitAnim, AodSettings.lyric.exitAnimDuration)
             ts.inAnimation = AnimCreator.enter(AodSettings.lyric.enterAnim, AodSettings.lyric.enterAnimDuration)
         }
@@ -127,17 +126,33 @@ object SharedTextSwitcher {
     fun showHitokoto(text: CharSequence) {
         val ts = switcher ?: return
         if (currentMode != Mode.HITOKOTO) {
-            // 从歌词切到一言：歌词退出 + 一言进入
             ts.outAnimation = AnimCreator.exit(AodSettings.lyric.exitAnim, AodSettings.lyric.exitAnimDuration)
             ts.inAnimation = AnimCreator.enter(AodSettings.hitokoto.enterAnim, AodSettings.hitokoto.enterAnimDuration)
             currentMode = Mode.HITOKOTO
+            resetAnimationState(ts)
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "SharedTextSwitcher: LYRIC -> HITOKOTO")
         } else {
-            // 一言内部更新
             ts.outAnimation = AnimCreator.exit(AodSettings.hitokoto.exitAnim, AodSettings.hitokoto.exitAnimDuration)
             ts.inAnimation = AnimCreator.enter(AodSettings.hitokoto.enterAnim, AodSettings.hitokoto.enterAnimDuration)
         }
         ts.setText(text)
+    }
+
+    /**
+     * 重置 TextSwitcher 子视图的动画状态。
+     *
+     * 在模式切换时调用，确保上一个动画不会影响新的动画。
+     * TextSwitcher 内部的 currentView/nextView 可能残留上一个动画的
+     * 变换属性（如 alpha、translationY），导致新动画跳过起始帧。
+     */
+    private fun resetAnimationState(ts: TextSwitcher) {
+        for (i in 0 until ts.childCount) {
+            val child = ts.getChildAt(i)
+            child.clearAnimation()
+            child.alpha = 1f
+            child.translationX = 0f
+            child.translationY = 0f
+        }
     }
 
     /**

@@ -348,6 +348,13 @@ object HitokotoModifier : AodModifier() {
         }
 
         fun update(text: CharSequence) {
+            for (i in 0 until view.childCount) {
+                val child = view.getChildAt(i)
+                child.clearAnimation()
+                child.alpha = 1f
+                child.translationX = 0f
+                child.translationY = 0f
+            }
             view.setText(text)
             view.invalidate()
             view.requestLayout()
