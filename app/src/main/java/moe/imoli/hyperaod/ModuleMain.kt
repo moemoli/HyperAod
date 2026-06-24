@@ -11,6 +11,7 @@ import io.github.kyuubiran.ezxhelper.xposed.EzXposed
 import io.github.kyuubiran.ezxhelper.xposed.dsl.HookFactory.`-Static`.createAfterHook
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
+import moe.imoli.hyperaod.aod.HitokotoModifier
 import moe.imoli.hyperaod.aod.ModifierManager
 
 /**
@@ -80,6 +81,7 @@ class ModuleMain : XposedModule() {
                 init = true
                 AodSettings.reload(getRemotePreferences("hook"))
                 AodSettings.watch(getRemotePreferences("hook"))
+                HitokotoModifier.prefetch()
                 DOZE_HOST.toClassOrNull()?.let {
                     it.resolve().apply {
                         // 视图更新时触发（当前未启用）

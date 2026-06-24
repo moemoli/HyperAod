@@ -31,6 +31,10 @@ object HitokotoModifier : AodModifier() {
     private var container: FrameLayout? = null
     private var dozeHost: Any? = null
 
+    /** 预取缓存，init 时直接显示避免延迟 */
+    @Volatile
+    private var cachedText: String? = null
+
     private val handler = Handler(Looper.getMainLooper())
     private val refreshRunnable = Runnable { fetchAndDisplay() }
 
@@ -99,6 +103,37 @@ object HitokotoModifier : AodModifier() {
             scheduleNextRefresh()
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto shown")
         }
+    }
+
+    /**
+     * 预取一言文本到缓存。
+     *
+     * 在模块初始化完成后调用，提前发起网络请求，
+     * 使 AOD 显示时可直接使用缓存文本，避免加载延迟。
+     * 仅在 [AodSettings.HitokotoSettings.enable] 为 true 时执行。
+     */
+    fun prefetch() {
+        if (!AodSettings.hitokoto.enable) return
+        Thread {
+            try {
+                val url = buildRequestUrl()
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto prefetch: ")
+                val conn = url.openConnection() as java.net.HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.connectTimeout = 5000
+                conn.readTimeout = 5000
+                conn.connect()
+                val body = conn.inputStream.bufferedReader().use { it.readText() }
+                conn.disconnect()
+                val json = org.json.JSONObject(body)
+                val hitokotoText = json.optString("hitokoto", "")
+                val from = json.optString("from", "")
+                cachedText = if (from.isNotEmpty()) " ——" else hitokotoText
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto prefetched: ")
+            } catch (e: Exception) {
+                Log.e(ModuleMain.TAG, "Failed to prefetch hitokoto", e)
+            }
+        }.start()
     }
 
     /**
