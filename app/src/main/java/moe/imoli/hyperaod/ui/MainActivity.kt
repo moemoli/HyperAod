@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui
+﻿package moe.imoli.hyperaod.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -36,8 +36,7 @@ class MainActivity : ComponentActivity() {
                         val navController = rememberNavController()
                         NavHost(
                             navController = navController,
-                            startDestination = NavRoutes.Home.route,
-                            modifier = Modifier.padding(innerPadding)
+                            startDestination = NavRoutes.Home.route
                         ) {
                             composable(NavRoutes.Home.route) {
                                 PortraitScreen(

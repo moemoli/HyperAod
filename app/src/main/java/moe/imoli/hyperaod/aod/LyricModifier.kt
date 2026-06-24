@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
-import android.view.animation.TranslateAnimation
 import android.widget.FrameLayout
 import android.widget.TextSwitcher
 import android.widget.TextView

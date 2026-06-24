@@ -1,7 +1,6 @@
 ﻿package moe.imoli.hyperaod.aod
 
 import android.content.Context
-import android.view.animation.TranslateAnimation
 import android.widget.FrameLayout
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 
