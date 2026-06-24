@@ -1,5 +1,7 @@
 ﻿package moe.imoli.hyperaod.ui
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
@@ -36,6 +39,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import moe.imoli.hyperaod.AodSettings
+import moe.imoli.hyperaod.app.HyperAod
 import moe.imoli.hyperaod.R
 import moe.imoli.hyperaod.ui.settings.ColorInputField
 import moe.imoli.hyperaod.ui.settings.DropdownField
@@ -98,6 +102,18 @@ fun PortraitScreen(
     // 行为设置状态
     var hideHitokotoWhenLyric by remember { mutableStateOf(AodSettings.behavior.hideHitokotoWhenLyric) }
     var displayOrder by remember { mutableStateOf(AodSettings.behavior.displayOrder.toList()) }
+
+    // 模块激活状态
+    var moduleActivated by remember { mutableStateOf(HyperAod.SERVICE != null) }
+    DisposableEffect(Unit) {
+        val listener = object : HyperAod.ServiceStateListener {
+            override fun onServiceStateChanged(service: io.github.libxposed.service.XposedService?) {
+                moduleActivated = service != null
+            }
+        }
+        HyperAod.addServiceStateListener(listener, notifyImmediately = true)
+        onDispose { HyperAod.removeServiceStateListener(listener) }
+    }
 
     // 设置加载完成后重新同步本地状态
     var reloadTrigger by remember { mutableIntStateOf(0) }
@@ -224,6 +240,29 @@ fun PortraitScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            if (!moduleActivated) {
+                // 模块未激活提示
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "模块未激活",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Text(
+                        text = "请在 LSPosed 中激活本模块并重启系统界面",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                    )
+                }
+            } else {
             // 搜索组件 + 设置分组
             SearchableGroup { query ->
                 SettingsGroup(
@@ -685,6 +724,7 @@ fun PortraitScreen(
                         }
                     }
                 }
+            }
             }
         }
     }
