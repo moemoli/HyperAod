@@ -117,7 +117,7 @@ fun AboutScreen(
         ) {
             // 应用图标
             Image(
-                painter = painterResource(id = R.mipmap.ic_launcher),
+                painter = painterResource(id = R.drawable.ic_hyperaod),
                 contentDescription = "应用图标",
                 modifier = Modifier.size(80.dp).clip(RoundedCornerShape(15.dp))
             )
