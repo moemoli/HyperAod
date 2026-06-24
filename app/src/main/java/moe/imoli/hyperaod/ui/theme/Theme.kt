@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui.theme
+﻿package moe.imoli.hyperaod.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -71,53 +71,52 @@ private val HyperDarkColorScheme = darkColorScheme(
 // ========================
 // HyperOS 3 Light Color Scheme
 // ========================
-// 清爽明亮的浅色方案，符合 HyperOS 3 亮色模式设计
 private val HyperLightColorScheme = lightColorScheme(
-    // Primary: HyperBlue
-    primary = HyperBlue40,
-    onPrimary = HyperGray100,
-    primaryContainer = HyperBlue90,
-    onPrimaryContainer = HyperBlue10,
-    // Secondary: HyperTeal
+    // Primary: #3382FF (Switch 开启、滑块、复选框)
+    primary = Color(0xFF3382FF),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFDCEEFB),
+    onPrimaryContainer = Color(0xFF001D36),
+    // Secondary
     secondary = HyperTeal40,
-    onSecondary = HyperGray100,
+    onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = HyperTeal90,
     onSecondaryContainer = HyperTeal10,
-    // Tertiary: HyperOrange
+    // Tertiary
     tertiary = HyperOrange40,
-    onTertiary = HyperGray100,
+    onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = HyperOrange90,
     onTertiaryContainer = HyperOrange10,
     // Error
     error = HyperRed40,
-    onError = HyperGray100,
+    onError = Color(0xFFFFFFFF),
     errorContainer = HyperRed90,
     onErrorContainer = HyperRed10,
-    // Surface & Background (HyperOS 浅色层次)
-    background = HyperGray98,
-    onBackground = HyperGray10,
-    surface = HyperGray98,
-    onSurface = HyperGray10,
-    surfaceVariant = HyperBlueGray90,
-    onSurfaceVariant = HyperBlueGray30,
-    // Surface containers (HyperOS 层叠卡片)
-    surfaceTint = HyperBlue40,
-    surfaceContainerLowest = HyperGray100,
-    surfaceContainerLow = HyperGray96,
-    surfaceContainer = HyperGray94,
-    surfaceContainerHigh = HyperGray92,
-    surfaceContainerHighest = HyperGray90,
-    // Outline
-    outline = HyperBlueGray50,
-    outlineVariant = HyperBlueGray80,
+    // Surface & Background
+    background = Color(0xFFF7F7F7),
+    onBackground = Color(0xFF828282),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF828282),
+    surfaceVariant = Color(0xFFE5E5E5),
+    onSurfaceVariant = Color(0xFF666666),
+    // Surface containers (设置组卡片统一白色)
+    surfaceTint = Color(0xFF3382FF),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFFFFFFF),
+    surfaceContainer = Color(0xFFFFFFFF),
+    surfaceContainerHigh = Color(0xFFFFFFFF),
+    surfaceContainerHighest = Color(0xFFFFFFFF),
+    // Outline (Switch 关闭态、分隔线)
+    outline = Color(0xFFE5E5E5),
+    outlineVariant = Color(0xFFB1B1B1),
     // Inverse
-    inverseSurface = HyperGray20,
-    inverseOnSurface = HyperGray95,
+    inverseSurface = Color(0xFF313131),
+    inverseOnSurface = Color(0xFFF7F7F7),
     inversePrimary = HyperBlue80,
     // Scrim & Shadow
     scrim = HyperGray0,
-    surfaceDim = HyperGray87,
-    surfaceBright = HyperGray98
+    surfaceDim = Color(0xFFF0F0F0),
+    surfaceBright = Color(0xFFFFFFFF)
 )
 
 @Composable

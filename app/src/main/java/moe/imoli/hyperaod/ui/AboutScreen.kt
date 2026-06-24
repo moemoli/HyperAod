@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui
+﻿package moe.imoli.hyperaod.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -55,7 +55,7 @@ fun AboutScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val iconTint = MaterialTheme.colorScheme.onSurfaceVariant
+    val iconTint = MaterialTheme.colorScheme.outlineVariant
     val iconBg = MaterialTheme.colorScheme.surfaceContainerLow
 
     fun openUrl(url: String) {

@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui.settings
+﻿package moe.imoli.hyperaod.ui.settings
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -169,7 +169,7 @@ fun SearchableGroup(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search),
                         contentDescription = "搜索",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier
                             .size(iconSize)
                             .alpha(iconAlpha)

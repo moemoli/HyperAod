@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui
+﻿package moe.imoli.hyperaod.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -32,7 +32,7 @@ fun ModuleSettingsScreen(
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val iconTint = MaterialTheme.colorScheme.onSurfaceVariant
+    val iconTint = MaterialTheme.colorScheme.outlineVariant
 
     Column(
         modifier = modifier

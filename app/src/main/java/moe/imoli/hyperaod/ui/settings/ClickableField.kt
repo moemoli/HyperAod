@@ -1,4 +1,4 @@
-package moe.imoli.hyperaod.ui.settings
+﻿package moe.imoli.hyperaod.ui.settings
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -66,7 +66,7 @@ fun ClickableField(
             Icon(
                 painter = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.size(20.dp)
             )
         }
