@@ -219,12 +219,8 @@ object HitokotoModifier : AodModifier() {
                 conn.connectTimeout = 5000
                 conn.readTimeout = 5000
                 conn.connect()
-                val body = conn.inputStream.bufferedReader().use { it.readText() }
+                val text = conn.inputStream.bufferedReader().use { it.readText() }.trim()
                 conn.disconnect()
-                val json = org.json.JSONObject(body)
-                val hitokotoText = json.optString("hitokoto", "")
-                val from = json.optString("from", "")
-                val text = if (from.isNotEmpty()) " ——" else hitokotoText
                 cachedText = text
                 if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto fetched for shared: ")
                 Handler(Looper.getMainLooper()).post {
@@ -278,10 +274,9 @@ object HitokotoModifier : AodModifier() {
         if (AodSettings.hitokoto.maxLength > 0) {
             params.add("max_length=${AodSettings.hitokoto.maxLength}")
         }
-        if (params.isNotEmpty()) {
-            sb.append("?")
-            sb.append(params.joinToString("&"))
-        }
+        params.add("encode=text")
+        sb.append("?")
+        sb.append(params.joinToString("&"))
         return java.net.URL(sb.toString())
     }
 
