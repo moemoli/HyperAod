@@ -66,6 +66,8 @@ object LyricModifier : AodModifier() {
                     val text = data.lyric?.text ?: return
                     container?.post {
                         if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "receive lyric: ")
+                        AodSettings.lyricPlaying = true
+                        HitokotoModifier.updateVisibility()
                         refresh(container, dozeHost)
                         switcher.update(text)
                     }
@@ -74,6 +76,8 @@ object LyricModifier : AodModifier() {
 
             override fun onStop(publisher: String?, data: SuperLyricData?) {
                 container?.post {
+                    AodSettings.lyricPlaying = false
+                    HitokotoModifier.updateVisibility()
                     refresh(container, dozeHost)
                     switcher.update("")
                 }

@@ -78,6 +78,30 @@ object HitokotoModifier : AodModifier() {
     }
 
     /**
+     * 根据歌词播放状态更新一言视图可见性。
+     *
+     * 当 [AodSettings.BehaviorSettings.hideHitokotoWhenLyric] 为 true 且
+     * [AodSettings.lyricPlaying] 为 true 时，隐藏一言视图并暂停定时刷新；
+     * 否则恢复显示并重新启动定时刷新。
+     *
+     * 由 [LyricModifier] 在歌词开始/停止时调用。
+     */
+    fun updateVisibility() {
+        if (!initialized) return
+        val shouldHide = AodSettings.behavior.hideHitokotoWhenLyric && AodSettings.lyricPlaying
+        val view = hitokotoSwitcher?.view ?: return
+        if (shouldHide) {
+            handler.removeCallbacks(refreshRunnable)
+            view.visibility = View.GONE
+            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto hidden: lyric playing")
+        } else {
+            view.visibility = View.VISIBLE
+            scheduleNextRefresh()
+            if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto shown")
+        }
+    }
+
+    /**
      * 按 [AodSettings.HitokotoSettings.updateInterval] 安排下一次刷新。
      */
     private fun scheduleNextRefresh() {

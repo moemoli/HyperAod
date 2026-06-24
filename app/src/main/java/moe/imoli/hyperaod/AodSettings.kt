@@ -37,7 +37,12 @@ object AodSettings {
 
     var lyric = LyricSettings
     var hitokoto = HitokotoSettings
+    var behavior = BehaviorSettings
     private var update = true
+
+    /** 运行时状态：歌词是否正在播放（由 LyricModifier 更新） */
+    @Volatile
+    var lyricPlaying: Boolean = false
 
     /**
      * 歌词相关设置
@@ -308,6 +313,8 @@ object AodSettings {
             putString("hitokoto.sentenceTypes", hitokoto.sentenceTypes.joinToString(","))
             putInt("hitokoto.minLength", hitokoto.minLength)
             putInt("hitokoto.maxLength", hitokoto.maxLength)
+            // behavior
+            putBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
 
             apply()
         } ?: Log.d(ModuleMain.TAG, "remote null")
@@ -362,6 +369,9 @@ object AodSettings {
         hitokoto.minLength = prefs.getInt("hitokoto.minLength", hitokoto.minLength)
         hitokoto.maxLength = prefs.getInt("hitokoto.maxLength", hitokoto.maxLength)
 
+        // behavior
+        behavior.hideHitokotoWhenLyric = prefs.getBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
+
         update = true
         loaded = true
 
@@ -380,6 +390,24 @@ object AodSettings {
             remotePreferences.registerOnSharedPreferenceChangeListener { preferences, _ ->
                 reload(preferences)
             }
+        }
+    }
+
+    /**
+     * 行为设置
+     *
+     * 控制各模块之间的交互行为。
+     */
+    object BehaviorSettings {
+        /** 歌词播放时是否隐藏一言 */
+        var hideHitokotoWhenLyric: Boolean = false
+            set(value) {
+                field = value
+                if (update) update()
+            }
+
+        override fun toString(): String {
+            return "hideHitokotoWhenLyric="
         }
     }
 

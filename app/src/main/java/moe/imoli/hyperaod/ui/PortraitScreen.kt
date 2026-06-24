@@ -97,6 +97,9 @@ fun PortraitScreen(
     var hitokotoExitAnimDuration by remember { mutableStateOf(AodSettings.hitokoto.exitAnimDuration) }
     var hitokotoUpdateInterval by remember { mutableStateOf(AodSettings.hitokoto.updateInterval) }
 
+    // 行为设置状态
+    var hideHitokotoWhenLyric by remember { mutableStateOf(AodSettings.behavior.hideHitokotoWhenLyric) }
+
     // 设置加载完成后重新同步本地状态
     var reloadTrigger by remember { mutableIntStateOf(0) }
     DisposableEffect(Unit) {
@@ -136,6 +139,7 @@ fun PortraitScreen(
             hitokotoExitAnim = AodSettings.hitokoto.exitAnim.type
             hitokotoExitAnimDuration = AodSettings.hitokoto.exitAnimDuration
             hitokotoUpdateInterval = AodSettings.hitokoto.updateInterval
+            hideHitokotoWhenLyric = AodSettings.behavior.hideHitokotoWhenLyric
         }
     }
 
@@ -621,6 +625,24 @@ fun PortraitScreen(
                             },
                             valueRange = 30f..600f,
                             label = "刷新间隔（秒，≥30）"
+                        )
+                    }
+                }
+
+                // 行为设置分组
+                SettingsGroup(
+                    label = "行为设置",
+                    searchQuery = query
+                ) {
+                    item("歌词播放时隐藏一言") {
+                        SwitchField(
+                            checked = hideHitokotoWhenLyric,
+                            onCheckedChange = {
+                                hideHitokotoWhenLyric = it
+                                AodSettings.behavior.hideHitokotoWhenLyric = it
+                            },
+                            label = "隐藏一言",
+                            description = "歌词正在播放时自动隐藏一言显示"
                         )
                     }
                 }
