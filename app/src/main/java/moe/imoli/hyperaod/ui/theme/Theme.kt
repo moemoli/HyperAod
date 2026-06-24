@@ -17,55 +17,54 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 // ========================
-// HyperOS 3 Dark Color Scheme
+// Dark Color Scheme
 // ========================
-// AMOLED 友好的深色方案，符合 HyperOS 3 暗色模式设计
 private val HyperDarkColorScheme = darkColorScheme(
-    // Primary: HyperBlue
-    primary = HyperBlue80,
-    onPrimary = HyperBlue20,
-    primaryContainer = HyperBlue30,
-    onPrimaryContainer = HyperBlue90,
-    // Secondary: HyperTeal
-    secondary = HyperTeal80,
-    onSecondary = HyperTeal20,
-    secondaryContainer = HyperTeal30,
-    onSecondaryContainer = HyperTeal90,
-    // Tertiary: HyperOrange
-    tertiary = HyperOrange80,
-    onTertiary = HyperOrange20,
-    tertiaryContainer = HyperOrange30,
-    onTertiaryContainer = HyperOrange90,
-    // Error
-    error = HyperRed80,
-    onError = HyperRed20,
-    errorContainer = HyperRed30,
-    onErrorContainer = HyperRed90,
-    // Surface & Background (HyperOS 深色层次)
-    background = HyperGray6,
+    // Primary: 与浅色一致
+    primary = Color(0xFF3382FF),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFDCEEFB),
+    onPrimaryContainer = Color(0xFF001D36),
+    // Secondary: 与浅色一致
+    secondary = HyperTeal40,
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = HyperTeal90,
+    onSecondaryContainer = HyperTeal10,
+    // Tertiary: 与浅色一致
+    tertiary = HyperOrange40,
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = HyperOrange90,
+    onTertiaryContainer = HyperOrange10,
+    // Error: 与浅色一致
+    error = HyperRed40,
+    onError = Color(0xFFFFFFFF),
+    errorContainer = HyperRed90,
+    onErrorContainer = HyperRed10,
+    // Surface & Background
+    background = Color(0xFF000000),
     onBackground = Color(0xFFF4F4F4),
     surface = Color(0xFF242424),
     onSurface = Color(0xFFF4F4F4),
-    surfaceVariant = HyperBlueGray30,
+    surfaceVariant = Color(0xFFE5E5E5),
     onSurfaceVariant = Color(0xFF929292),
-    // Surface containers (HyperOS 层叠卡片)
-    surfaceTint = HyperBlue80,
-    surfaceContainerLowest = HyperGray4,
-    surfaceContainerLow = HyperGray10,
-    surfaceContainer = HyperGray12,
-    surfaceContainerHigh = HyperGray17,
-    surfaceContainerHighest = HyperGray22,
+    // Surface containers (设置组背景统一 #242424)
+    surfaceTint = Color(0xFF3382FF),
+    surfaceContainerLowest = Color(0xFF242424),
+    surfaceContainerLow = Color(0xFF242424),
+    surfaceContainer = Color(0xFF242424),
+    surfaceContainerHigh = Color(0xFF242424),
+    surfaceContainerHighest = Color(0xFF242424),
     // Outline
-    outline = HyperBlueGray60,
-    outlineVariant = Color(0xFFE7E7E7),
-    // Inverse
-    inverseSurface = HyperGray90,
-    inverseOnSurface = HyperGray20,
-    inversePrimary = HyperBlue40,
+    outline = Color(0xFF656565),
+    outlineVariant = Color(0xFFE6E6E6),
+    // Inverse: 与浅色一致
+    inverseSurface = Color(0xFFE6E6E6),
+    inverseOnSurface = Color(0xFFF7F7F7),
+    inversePrimary = HyperBlue80,
     // Scrim & Shadow
     scrim = HyperGray0,
-    surfaceDim = HyperGray6,
-    surfaceBright = HyperGray25
+    surfaceDim = Color(0xFF1A1A1A),
+    surfaceBright = Color(0xFF242424)
 )
 
 // ========================
@@ -106,9 +105,9 @@ private val HyperLightColorScheme = lightColorScheme(
     surfaceContainer = Color(0xFFFFFFFF),
     surfaceContainerHigh = Color(0xFFFFFFFF),
     surfaceContainerHighest = Color(0xFFFFFFFF),
-    // Outline (Switch 关闭态、分隔线)
-    outline = Color(0xFFEBEBEB),
-    outlineVariant = Color(0xFFB1B1B1),
+    // Outline (图标、分隔线)
+    outline = Color(0xFFB4B4B4),
+    outlineVariant = Color(0xFF393939),
     // Inverse
     inverseSurface = Color(0xFF393939),
     inverseOnSurface = Color(0xFFF7F7F7),
