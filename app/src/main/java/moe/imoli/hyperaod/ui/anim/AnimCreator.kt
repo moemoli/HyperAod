@@ -2,7 +2,6 @@
 
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
-import android.view.animation.AnimationSet
 import android.view.animation.TranslateAnimation
 import moe.imoli.hyperaod.AodSettings
 
@@ -24,14 +23,6 @@ object AnimCreator {
         AodSettings.Anim.Enter.FadeIn -> AlphaAnimation(0f, 1f).apply { fillBefore = true }
         AodSettings.Anim.Enter.Up -> TranslateAnimation(0f, 0f, 500f, 0f)
         AodSettings.Anim.Enter.Down -> TranslateAnimation(0f, 0f, -500f, 0f)
-        AodSettings.Anim.Enter.Left -> AnimationSet(false).apply {
-            addAnimation(TranslateAnimation(0f, -1000f, 0f, 0f))
-            addAnimation(AlphaAnimation(0f, 1f).apply { fillBefore = true })
-        }
-        AodSettings.Anim.Enter.Right -> AnimationSet(false).apply {
-            addAnimation(TranslateAnimation(0f, 1000f, 0f, 0f))
-            addAnimation(AlphaAnimation(0f, 1f).apply { fillBefore = true })
-        }
     }.apply {
         this.duration = duration.toLong()
     }
@@ -47,14 +38,6 @@ object AnimCreator {
         AodSettings.Anim.Exit.FadeOut -> AlphaAnimation(1f, 0f).apply { fillAfter = true }
         AodSettings.Anim.Exit.Up -> TranslateAnimation(0f, 0f, 0f, -500f)
         AodSettings.Anim.Exit.Down -> TranslateAnimation(0f, 0f, 0f, 500f)
-        AodSettings.Anim.Exit.Left -> AnimationSet(false).apply {
-            addAnimation(TranslateAnimation(0f, -1000f, 0f, 0f))
-            addAnimation(AlphaAnimation(1f, 0f).apply { fillAfter = true })
-        }
-        AodSettings.Anim.Exit.Right -> AnimationSet(false).apply {
-            addAnimation(TranslateAnimation(0f, 1000f, 0f, 0f))
-            addAnimation(AlphaAnimation(1f, 0f).apply { fillAfter = true })
-        }
     }.apply {
         this.duration = duration.toLong()
     }

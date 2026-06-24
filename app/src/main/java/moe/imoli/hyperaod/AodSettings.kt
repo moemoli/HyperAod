@@ -451,9 +451,7 @@ object AodSettings {
             None(0),
             FadeIn(1),
             Up(2),
-            Down(3),
-            Left(4),
-            Right(5), ;
+            Down(3), ;
 
             companion object {
                 fun valueOf(value: Int): Enter = when (value) {
@@ -461,8 +459,6 @@ object AodSettings {
                     1 -> FadeIn
                     2 -> Up
                     3 -> Down
-                    4 -> Left
-                    5 -> Right
                     else -> None
                 }
             }
@@ -473,9 +469,7 @@ object AodSettings {
             None(0),
             FadeOut(1),
             Up(2),
-            Down(3),
-            Left(4),
-            Right(5), ;
+            Down(3), ;
 
             companion object {
                 fun valueOf(value: Int): Exit = when (value) {
@@ -483,8 +477,6 @@ object AodSettings {
                     1 -> FadeOut
                     2 -> Up
                     3 -> Down
-                    4 -> Left
-                    5 -> Right
                     else -> None
                 }
             }

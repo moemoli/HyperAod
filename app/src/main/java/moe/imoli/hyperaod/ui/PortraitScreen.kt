@@ -381,9 +381,7 @@ fun PortraitScreen(
                                 DropdownOption("无", 0),
                                 DropdownOption("淡入", 1),
                                 DropdownOption("上滑", 2),
-                                DropdownOption("下滑", 3),
-                                DropdownOption("左滑", 4),
-                                DropdownOption("右滑", 5)
+                                DropdownOption("下滑", 3)
                             ),
 
                             )
@@ -400,9 +398,7 @@ fun PortraitScreen(
                                 DropdownOption("无", 0),
                                 DropdownOption("淡出", 1),
                                 DropdownOption("上滑", 2),
-                                DropdownOption("下滑", 3),
-                                DropdownOption("左滑", 4),
-                                DropdownOption("右滑", 5)
+                                DropdownOption("下滑", 3)
                             ),
 
                             )
@@ -611,9 +607,7 @@ fun PortraitScreen(
                                 DropdownOption("无", 0),
                                 DropdownOption("淡入", 1),
                                 DropdownOption("上滑", 2),
-                                DropdownOption("下滑", 3),
-                                DropdownOption("左滑", 4),
-                                DropdownOption("右滑", 5)
+                                DropdownOption("下滑", 3)
                             )
                         )
                     }
@@ -640,9 +634,7 @@ fun PortraitScreen(
                                 DropdownOption("无", 0),
                                 DropdownOption("淡出", 1),
                                 DropdownOption("上滑", 2),
-                                DropdownOption("下滑", 3),
-                                DropdownOption("左滑", 4),
-                                DropdownOption("右滑", 5)
+                                DropdownOption("下滑", 3)
                             )
                         )
                     }
