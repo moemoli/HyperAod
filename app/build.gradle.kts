@@ -9,9 +9,9 @@ plugins {
 }
 
 androidGitVersion {
-    prefix = "v"
+    prefix = "release-"
     commitHashLength = 8
-    format = "release-%tag%-%commit%"
+    format = "%tag%-%commit%"
     codeFormat = "MNNNPPP"
 }
 
