@@ -1,7 +1,6 @@
 ﻿package moe.imoli.hyperaod.ui
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -24,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,17 +30,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.res.ResourcesCompat
 import moe.imoli.hyperaod.BuildConfig
 import moe.imoli.hyperaod.R
 import moe.imoli.hyperaod.ui.theme.HyperAodTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * 关于界面
@@ -161,7 +159,9 @@ fun AboutScreen(
 
             // 版权信息
             Text(
-                text = "© 2025 moemoli\nAll Rights Reserved",
+                text = "© ${
+                    DateTimeFormatter.ofPattern("yyyy").format(LocalDate.now())
+                } moemoli\nAll Rights Reserved",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

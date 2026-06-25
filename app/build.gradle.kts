@@ -4,6 +4,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.gitversion)
+}
+
+androidGitVersion {
+    prefix = "v"
+    commitHashLength = 8
+    format = "release-%tag%-%commit%"
+    codeFormat = "MNNNPPP"
 }
 
 android {
@@ -16,22 +24,40 @@ android {
         applicationId = "moe.imoli.hyperaod"
         minSdk = 35
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = androidGitVersion.code()
+        versionName = androidGitVersion.name()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+
+            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "debug.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = true
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs["release"]
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
