@@ -6,8 +6,8 @@
 
     <!-- 平移使图像居中于 viewport -->
     <group
-        android:translateX="466.7"
-        android:translateY="466.7">
+        android:translateX="500"
+        android:translateY="500">
 
         <path
             android:fillColor="#fff"
