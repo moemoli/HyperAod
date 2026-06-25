@@ -11,7 +11,16 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green?style=flat-square&logo=android)](https://android.com)
 [![LSPosed](https://img.shields.io/badge/Framework-LSPosed-blueviolet?style=flat-square)](https://github.com/LSPosed/LSPosed)
 
+## 功能
 
+- 息屏歌词(需搭配SuperLyric使用)
+- 息屏一言
+
+## 构建
+
+```bash
+./gradlew assembleRelease
+```
 
 ## Star History
 
