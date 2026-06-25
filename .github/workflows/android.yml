@@ -1,0 +1,36 @@
+name: Android CI
+
+on:
+  push:
+    tags:
+      - 'v*'  # 只在推送 v1.0.0 这类 tag 时触发
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: 安装JDK21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+        
+    - name: 释放keystore文件
+      run: echo -n "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 -d > keystore.jks
+
+    - name: 修改gradlew运行权限
+      run: chmod +x gradlew
+      
+    - name: 编译
+      run: ./gradlew assembleRelease
+
+    - name: 上传编译产物
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-release-apk
+        path: app/build/outputs/apk/release/*.apk    
