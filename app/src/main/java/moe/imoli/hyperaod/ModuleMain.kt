@@ -79,8 +79,9 @@ class ModuleMain : XposedModule() {
                 log(Log.DEBUG, TAG, "plugin connected, next.")
                 setPluginClassLoader(pluginInstance.javaClass.classLoader ?: return@createAfterHook)
                 init = true
-                AodSettings.reload(getRemotePreferences("hook"))
-                AodSettings.watch(getRemotePreferences("hook"))
+                val remote = getRemotePreferences("hook")
+                AodSettings.reload(remote)
+                AodSettings.watch(remote)
                 HitokotoModifier.prefetch()
                 DOZE_HOST.toClassOrNull()?.let {
                     it.resolve().apply {

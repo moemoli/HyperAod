@@ -53,66 +53,69 @@ object AodSettings {
         var exitAnimDuration: Float = 200f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.exitAnimDuration", value)
             }
 
         var enterAnimDuration: Float = 200f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.enterAnimDuration", value)
             }
         var exitAnim: Anim.Exit = Anim.Exit.None
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.exitAnim", value.type)
             }
         var enterAnim: Anim.Enter = Anim.Enter.None
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.enterAnim", value.type)
             }
         var alignment: Alignment = Alignment.Center
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.alignment", value.type)
             }
         var marginRight: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.marginRight", value)
             }
         var marginLeft: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.marginLeft", value)
             }
         var marginBottom: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.marginBottom", value)
             }
         var marginTop: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.marginTop", value)
             }
+
         /** 字体颜色，ARGB long 格式 */
         var fontColor: Long = -1L
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.fontColor", value)
             }
+
         /** 字体大小，单位 sp */
         var fontSize: Float = 16f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.fontSize", value)
             }
+
         /** 是否启用歌词显示 */
         var enable = false
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("lyric.enable", value)
             }
 
         fun updateAlignment(type: Int) {
@@ -158,64 +161,66 @@ object AodSettings {
         var enable: Boolean = false
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.enable", value)
             }
+
         /** 字体大小，单位 sp */
         var fontSize: Float = 16f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.fontSize", value)
             }
+
         /** 字体颜色，ARGB long 格式 */
         var fontColor: Long = -1L
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.fontColor", value)
             }
         var marginTop: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.marginTop", value)
             }
         var marginBottom: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.marginBottom", value)
             }
         var marginLeft: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.marginLeft", value)
             }
         var marginRight: Float = 0f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.marginRight", value)
             }
         var alignment: Alignment = Alignment.Center
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.alignment", value.type)
             }
         var enterAnim: Anim.Enter = Anim.Enter.None
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.enterAnim", value.type)
             }
         var enterAnimDuration: Float = 200f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.enterAnimDuration", value)
             }
         var exitAnim: Anim.Exit = Anim.Exit.None
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.exitAnim", value.type)
             }
         var exitAnimDuration: Float = 200f
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.exitAnimDuration", value)
             }
 
         /**
@@ -224,7 +229,7 @@ object AodSettings {
         var updateInterval: Int = 60
             set(value) {
                 field = value.coerceAtLeast(MIN_UPDATE_INTERVAL)
-                if (update) update()
+                if (update) update("hitokoto.updateInterval", value)
             }
 
         /**
@@ -235,21 +240,21 @@ object AodSettings {
         var sentenceTypes: MutableSet<String> = mutableSetOf()
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.sentenceTypes", value.joinToString(","))
             }
 
         /** 最小字数，0 表示不限制 */
         var minLength: Int = 0
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.minLength", value)
             }
 
         /** 最大字数，0 表示不限制 */
         var maxLength: Int = 0
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("hitokoto.maxLength", value)
             }
 
         fun updateAlignment(type: Int) {
@@ -280,102 +285,130 @@ object AodSettings {
                     "updateInterval=;"
         }
     }
+
     /** 将当前设置写入远端 SharedPreferences */
-    fun update() {
+    fun <T> update(key: String, type: T) {
         HyperAod.SERVICE?.getRemotePreferences("hook")?.edit {
             // lyric
-            putBoolean("lyric.enable", lyric.enable)
-            putFloat("lyric.fontSize", lyric.fontSize)
-            putLong("lyric.fontColor", lyric.fontColor.toInt().toLong())
-            putFloat("lyric.marginTop", lyric.marginTop)
-            putFloat("lyric.marginBottom", lyric.marginBottom)
-            putFloat("lyric.marginLeft", lyric.marginLeft)
-            putFloat("lyric.marginRight", lyric.marginRight)
-            putInt("lyric.alignment", lyric.alignment.type)
-            putInt("lyric.enterAnim", lyric.enterAnim.type)
-            putInt("lyric.exitAnim", lyric.exitAnim.type)
-            putFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
-            putFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
-            // hitokoto
-            putBoolean("hitokoto.enable", hitokoto.enable)
-            putFloat("hitokoto.fontSize", hitokoto.fontSize)
-            putLong("hitokoto.fontColor", hitokoto.fontColor.toInt().toLong())
-            putFloat("hitokoto.marginTop", hitokoto.marginTop)
-            putFloat("hitokoto.marginBottom", hitokoto.marginBottom)
-            putFloat("hitokoto.marginLeft", hitokoto.marginLeft)
-            putFloat("hitokoto.marginRight", hitokoto.marginRight)
-            putInt("hitokoto.alignment", hitokoto.alignment.type)
-            putInt("hitokoto.enterAnim", hitokoto.enterAnim.type)
-            putFloat("hitokoto.enterAnimDuration", hitokoto.enterAnimDuration)
-            putInt("hitokoto.exitAnim", hitokoto.exitAnim.type)
-            putFloat("hitokoto.exitAnimDuration", hitokoto.exitAnimDuration)
-            putInt("hitokoto.updateInterval", hitokoto.updateInterval)
-            putString("hitokoto.sentenceTypes", hitokoto.sentenceTypes.joinToString(","))
-            putInt("hitokoto.minLength", hitokoto.minLength)
-            putInt("hitokoto.maxLength", hitokoto.maxLength)
-            // behavior
-            putBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
-            putString("behavior.displayOrder", behavior.displayOrder.joinToString(","))
+            when (type) {
+                is Boolean -> {
+                    putBoolean(key, type)
+                }
 
+                is Float -> {
+                    putFloat(key, type)
+                }
+
+                is Long -> {
+                    putLong(key, type)
+                }
+
+                is String -> {
+                    putString(key, type)
+                }
+
+                is Int -> {
+                    putInt(key, type)
+                }
+
+                else -> {
+                    Log.d(ModuleMain.TAG, "unknown type $type for key $key")
+                }
+
+            }
             apply()
         } ?: Log.d(ModuleMain.TAG, "remote null")
     }
 
     /** 从 SharedPreferences 重新加载所有设置 */
-    fun reload(prefs: SharedPreferences) {
+    fun reload(prefs: SharedPreferences, key: String? = null) {
         update = false
 
         // lyric
-        lyric.enable = prefs.getBoolean("lyric.enable", lyric.enable)
-        lyric.fontSize = prefs.getFloat("lyric.fontSize", lyric.fontSize)
-        // 读取颜色值，兼容旧格式（高 32 位）和新格式（低 32 位 ARGB int）
-        val storedColor = prefs.getLong("lyric.fontColor", -1L)
-        lyric.fontColor = if (storedColor.toInt() == 0 && storedColor != 0L) {
-            storedColor shr 32 // 旧格式：颜色在高 32 位，右移得到 ARGB int
-        } else {
-            storedColor // 新格式：已经是 ARGB int
-        }
-        lyric.marginTop = prefs.getFloat("lyric.marginTop", lyric.marginTop)
-        lyric.marginBottom = prefs.getFloat("lyric.marginBottom", lyric.marginBottom)
-        lyric.marginLeft = prefs.getFloat("lyric.marginLeft", lyric.marginLeft)
-        lyric.marginRight = prefs.getFloat("lyric.marginRight", lyric.marginRight)
-        lyric.enterAnimDuration = prefs.getFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
-        lyric.exitAnimDuration = prefs.getFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
-        lyric.enterAnim = Anim.Enter.valueOf(prefs.getInt("lyric.enterAnim", lyric.enterAnim.type))
-        lyric.exitAnim = Anim.Exit.valueOf(prefs.getInt("lyric.exitAnim", lyric.exitAnim.type))
-        lyric.alignment = Alignment.valueOf(prefs.getInt("lyric.alignment", lyric.alignment.type))
+        if (key == null || key == "lyric.enable")
+            lyric.enable = prefs.getBoolean("lyric.enable", lyric.enable)
+        if (key == null || key == "lyric.fontSize")
+            lyric.fontSize = prefs.getFloat("lyric.fontSize", lyric.fontSize)
+        if (key == null || key == "lyric.fontColor")
+            lyric.fontColor = prefs.getLong("lyric.fontColor", -1L)
+        if (key == null || key == "lyric.marginTop")
+            lyric.marginTop = prefs.getFloat("lyric.marginTop", lyric.marginTop)
+        if (key == null || key == "lyric.marginBottom")
+            lyric.marginBottom = prefs.getFloat("lyric.marginBottom", lyric.marginBottom)
+        if (key == null || key == "lyric.marginLeft")
+            lyric.marginLeft = prefs.getFloat("lyric.marginLeft", lyric.marginLeft)
+        if (key == null || key == "lyric.marginRight")
+            lyric.marginRight = prefs.getFloat("lyric.marginRight", lyric.marginRight)
+        if (key == null || key == "lyric.enterAnimDuration")
+            lyric.enterAnimDuration =
+                prefs.getFloat("lyric.enterAnimDuration", lyric.enterAnimDuration)
+        if (key == null || key == "lyric.exitAnimDuration")
+            lyric.exitAnimDuration =
+                prefs.getFloat("lyric.exitAnimDuration", lyric.exitAnimDuration)
+        if (key == null || key == "lyric.enterAnim")
+            lyric.enterAnim =
+                Anim.Enter.valueOf(prefs.getInt("lyric.enterAnim", lyric.enterAnim.type))
+        if (key == null || key == "lyric.exitAnim")
+            lyric.exitAnim = Anim.Exit.valueOf(prefs.getInt("lyric.exitAnim", lyric.exitAnim.type))
+        if (key == null || key == "lyric.alignment")
+            lyric.alignment =
+                Alignment.valueOf(prefs.getInt("lyric.alignment", lyric.alignment.type))
 
         // hitokoto
-        hitokoto.enable = prefs.getBoolean("hitokoto.enable", hitokoto.enable)
-        hitokoto.fontSize = prefs.getFloat("hitokoto.fontSize", hitokoto.fontSize)
-        val storedHitokotoColor = prefs.getLong("hitokoto.fontColor", -1L)
-        hitokoto.fontColor = if (storedHitokotoColor.toInt() == 0 && storedHitokotoColor != 0L) {
-            storedHitokotoColor shr 32
-        } else {
-            storedHitokotoColor
-        }
-        hitokoto.marginTop = prefs.getFloat("hitokoto.marginTop", hitokoto.marginTop)
-        hitokoto.marginBottom = prefs.getFloat("hitokoto.marginBottom", hitokoto.marginBottom)
-        hitokoto.marginLeft = prefs.getFloat("hitokoto.marginLeft", hitokoto.marginLeft)
-        hitokoto.marginRight = prefs.getFloat("hitokoto.marginRight", hitokoto.marginRight)
-        hitokoto.enterAnimDuration = prefs.getFloat("hitokoto.enterAnimDuration", hitokoto.enterAnimDuration)
-        hitokoto.enterAnim = Anim.Enter.valueOf(prefs.getInt("hitokoto.enterAnim", hitokoto.enterAnim.type))
-        hitokoto.alignment = Alignment.valueOf(prefs.getInt("hitokoto.alignment", hitokoto.alignment.type))
-        hitokoto.exitAnim = Anim.Exit.valueOf(prefs.getInt("hitokoto.exitAnim", hitokoto.exitAnim.type))
-        hitokoto.exitAnimDuration = prefs.getFloat("hitokoto.exitAnimDuration", hitokoto.exitAnimDuration)
-        hitokoto.updateInterval = prefs.getInt("hitokoto.updateInterval", hitokoto.updateInterval)
-        val storedTypes = prefs.getString("hitokoto.sentenceTypes", "") ?: ""
-        hitokoto.sentenceTypes = if (storedTypes.isEmpty()) mutableSetOf()
+        if (key == null || key == "hitokoto.enable")
+            hitokoto.enable = prefs.getBoolean("hitokoto.enable", hitokoto.enable)
+        if (key == null || key == "hitokoto.fontSize")
+            hitokoto.fontSize = prefs.getFloat("hitokoto.fontSize", hitokoto.fontSize)
+        if (key == null || key == "hitokoto.fontColor")
+            hitokoto.fontColor = prefs.getLong("hitokoto.fontColor", -1L)
+        if (key == null || key == "hitokoto.marginTop")
+            hitokoto.marginTop = prefs.getFloat("hitokoto.marginTop", hitokoto.marginTop)
+        if (key == null || key == "hitokoto.marginBottom")
+            hitokoto.marginBottom = prefs.getFloat("hitokoto.marginBottom", hitokoto.marginBottom)
+        if (key == null || key == "hitokoto.marginLeft")
+            hitokoto.marginLeft = prefs.getFloat("hitokoto.marginLeft", hitokoto.marginLeft)
+        if (key == null || key == "hitokoto.marginRight")
+            hitokoto.marginRight = prefs.getFloat("hitokoto.marginRight", hitokoto.marginRight)
+        if (key == null || key == "hitokoto.enterAnimDuration")
+            hitokoto.enterAnimDuration =
+                prefs.getFloat("hitokoto.enterAnimDuration", hitokoto.enterAnimDuration)
+        if (key == null || key == "hitokoto.enterAnim")
+            hitokoto.enterAnim =
+                Anim.Enter.valueOf(prefs.getInt("hitokoto.enterAnim", hitokoto.enterAnim.type))
+        if (key == null || key == "hitokoto.alignment")
+            hitokoto.alignment =
+                Alignment.valueOf(prefs.getInt("hitokoto.alignment", hitokoto.alignment.type))
+        if (key == null || key == "hitokoto.exitAnim")
+            hitokoto.exitAnim =
+                Anim.Exit.valueOf(prefs.getInt("hitokoto.exitAnim", hitokoto.exitAnim.type))
+        if (key == null || key == "hitokoto.exitAnimDuration")
+            hitokoto.exitAnimDuration =
+                prefs.getFloat("hitokoto.exitAnimDuration", hitokoto.exitAnimDuration)
+        if (key == null || key == "hitokoto.updateInterval")
+            hitokoto.updateInterval =
+                prefs.getInt("hitokoto.updateInterval", hitokoto.updateInterval)
+        if (key == null || key == "hitokoto.sentenceTypes") {
+            val storedTypes = prefs.getString("hitokoto.sentenceTypes", "") ?: ""
+            hitokoto.sentenceTypes = if (storedTypes.isEmpty()) mutableSetOf()
             else storedTypes.split(",").toMutableSet()
-        hitokoto.minLength = prefs.getInt("hitokoto.minLength", hitokoto.minLength)
-        hitokoto.maxLength = prefs.getInt("hitokoto.maxLength", hitokoto.maxLength)
+        }
+        if (key == null || key == "hitokoto.minLength")
+            hitokoto.minLength = prefs.getInt("hitokoto.minLength", hitokoto.minLength)
+        if (key == null || key == "hitokoto.maxLength")
+            hitokoto.maxLength = prefs.getInt("hitokoto.maxLength", hitokoto.maxLength)
 
         // behavior
-        behavior.hideHitokotoWhenLyric = prefs.getBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
-        val storedOrder = prefs.getString("behavior.displayOrder", "") ?: ""
-        if (storedOrder.isNotEmpty()) {
-            behavior.displayOrder = storedOrder.split(",").toMutableList()
+        if (key == null || key == "behavior.hideHitokotoWhenLyric")
+            behavior.hideHitokotoWhenLyric =
+                prefs.getBoolean("behavior.hideHitokotoWhenLyric", behavior.hideHitokotoWhenLyric)
+
+        if (key == null || key == "behavior.displayOrder") {
+            val storedOrder = prefs.getString("behavior.displayOrder", "") ?: ""
+            if (storedOrder.isNotEmpty()) {
+                behavior.displayOrder = storedOrder.split(",").toMutableList()
+            }
         }
+
 
         update = true
         loaded = true
@@ -391,10 +424,9 @@ object AodSettings {
 
     /** 注册远端 SharedPreferences 变更监听 */
     fun watch(remotePreferences: SharedPreferences) {
-        if (remotePreferences is RemotePreferences) {
-            remotePreferences.registerOnSharedPreferenceChangeListener { preferences, _ ->
-                reload(preferences)
-            }
+        remotePreferences.registerOnSharedPreferenceChangeListener { _, key ->
+            Log.d(ModuleMain.TAG, "watch change: $key")
+            reload(remotePreferences, key)
         }
     }
 
@@ -408,7 +440,7 @@ object AodSettings {
         var hideHitokotoWhenLyric: Boolean = false
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("behavior.hideHitokotoWhenLyric", value)
             }
 
         /**
@@ -420,7 +452,7 @@ object AodSettings {
         var displayOrder: MutableList<String> = mutableListOf("lyric", "hitokoto")
             set(value) {
                 field = value
-                if (update) update()
+                if (update) update("behavior.displayOrder", value.joinToString(","))
             }
 
         override fun toString(): String {
