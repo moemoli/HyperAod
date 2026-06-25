@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -30,13 +31,27 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val signFile = rootProject.file("local.properties")
+    var signStorePassword = System.getenv("KEYSTORE_PASSWORD")
+    var signKeyAlias = System.getenv("KEY_ALIAS")
+    var signKeyPassword = System.getenv("KEY_PASSWORD")
+    var signStoreFile = "keystore.jks"
+    if (signFile.exists()) {
+        val signProp = Properties()
+        signProp.load(signFile.inputStream())
+        signStoreFile = signProp.getProperty("sign.store.file")
+        signStorePassword = signProp.getProperty("sign.store.password")
+        signKeyAlias = signProp.getProperty("sign.key.alias")
+        signKeyPassword = signProp.getProperty("sign.key.password")
+    }
+
+
     signingConfigs {
         create("release") {
-
-            storeFile = file( "keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            storeFile = file(signStoreFile)
+            storePassword = signStorePassword
+            keyAlias = signKeyAlias
+            keyPassword = signKeyPassword
 
             enableV1Signing = true
             enableV2Signing = true
