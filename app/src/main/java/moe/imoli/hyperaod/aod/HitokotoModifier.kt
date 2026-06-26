@@ -64,6 +64,16 @@ object HitokotoModifier : AodModifier() {
                 conn.disconnect()
                 cachedText = text
                 if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto cached: $text")
+                if (initialized) {
+                    val c = container ?: return@Thread
+                    c.post {
+                        if (useShared) {
+                            SharedTextSwitcher.showHitokoto(text)
+                        } else {
+                            hitokotoSwitcher?.update(text)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 Log.e(ModuleMain.TAG, "Failed to fetch hitokoto", e)
             }
@@ -131,6 +141,10 @@ object HitokotoModifier : AodModifier() {
         this.dozeHost = dozeHost
 
         if (useShared) {
+            if (SharedTextSwitcher.instance == null) {
+                SharedTextSwitcher.init(context, container)
+                if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto created SharedTextSwitcher - lyric disabled")
+            }
             if (ModuleMain.DEBUG) Log.d(ModuleMain.TAG, "hitokoto using SharedTextSwitcher")
         } else {
             val switcher = HitokotoSwitcher()
