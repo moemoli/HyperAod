@@ -177,6 +177,8 @@ object HitokotoModifier : AodModifier() {
         }
 
         initialized = true
+
+        startPeriodicRefresh()
     }
 
     override fun update() {
